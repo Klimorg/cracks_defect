@@ -67,6 +67,7 @@ def get_files_and_labels(
     return images, labels
 
 
+@logger.catch()
 def save_as_csv(filenames: List[str], labels: List[str], destination: str):
     """[summary]
 
@@ -83,6 +84,7 @@ def save_as_csv(filenames: List[str], labels: List[str], destination: str):
     data_frame.to_csv(destination)
 
 
+@logger.catch()
 @app.command()
 def main(repo_path: str = Path(__file__).parent.parent, ratio: float = 0.25):
     """[summary]

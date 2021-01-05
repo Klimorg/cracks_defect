@@ -1,4 +1,4 @@
-# Les requêtes concernant la table contenant les évènements de communication
+# Initialisation du dataset
 
 ::: utils.get_subdataset
     rendering:

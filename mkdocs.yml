@@ -1,0 +1,49 @@
+site_name: Documentation
+site_author: Mathieu Klimczak
+dev_addr: "127.0.0.1:8001"
+theme:
+  name: material
+  logo: images/logo_blanc.svg
+  language: fr
+  features:
+    - navigation.instant
+    - navigation.tabs
+
+plugins:
+  - search:
+      lang: fr
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          setup_commands:
+            - import sys
+            - sys.path.append("back")
+          rendering:
+            show_source: true
+
+nav:
+  - Acceuil: index.md
+  - Initialisation: get_subdatasets.md
+
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.details
+  - pymdownx.superfences
+  - def_list
+  - attr_list
+
+  # config pour latex
+  - pymdownx.arithmatex:
+      generic: true
+
+# config pour latex
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

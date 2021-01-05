@@ -3,12 +3,12 @@ import random
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import typer
 from sklearn.model_selection import train_test_split
 
-app = typer.Typer()
 RANDOM_SEED = 42
+
+app = typer.Typer()
 
 
 def set_seed(RANDOM_SEED: int):
@@ -22,14 +22,14 @@ set_seed(RANDOM_SEED)
 
 @app.command()
 def get_dataset(source_folder: str, ratio: float = 0.25):
-    dict = {}
+    dic = {}
     source = Path(source_folder)
     subfolders = [x for x in source.iterdir() if x.is_dir()]
 
     for i, subfolder in enumerate(subfolders):
-        dict[subfolder.stem] = i
+        dic[subfolder.stem] = i
 
-    print(f'{dict}')
+    print(f"{dic}")
 
     subfiles = sorted([x for x in source.glob("**/*") if x.is_file()])
     random.shuffle(subfiles)
@@ -43,10 +43,6 @@ def get_dataset(source_folder: str, ratio: float = 0.25):
         f"images in val : {len(val)},\n"
         f"images in test : {len(test)}"
     )
-
-
-    label_train = [dict[filename.parts[-2]] for filename in train]
-
 
 
 if __name__ == "__main__":

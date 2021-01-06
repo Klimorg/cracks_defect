@@ -1,3 +1,7 @@
+from typing import List
+
+import tensorflow as tf
+import yaml
 from tensorflow.keras import Model
 from tensorflow.keras.layers import (
     Activation,
@@ -10,8 +14,27 @@ from tensorflow.keras.layers import (
     ReLU,
 )
 
+params = yaml.safe_load(open("configs/params.yml"))["resnet"]
 
-def bn_relu_conv(tensor, filters, kernel_size, strides):
+repetitions = params["repetitions"]
+n_classes = params["n_classes"]
+img_shape = params["img_shape"]
+
+
+def bn_relu_conv(
+    tensor: tf.Tensor, filters: int, kernel_size: List[int], strides: List[int]
+) -> tf.Tensor:
+    """[summary]
+
+    Args:
+        tensor (tf.Tensor): [description]
+        filters (int): [description]
+        kernel_size (List[int]): [description]
+        strides (List[int]): [description]
+
+    Returns:
+        tf.Tensor: [description]
+    """
     x = BatchNormalization()(tensor)
     x = ReLU()(x)
     x = Conv2D(
@@ -26,7 +49,16 @@ def bn_relu_conv(tensor, filters, kernel_size, strides):
     return x
 
 
-def resnet_block(tensor, filters):
+def resnet_block(tensor: tf.Tensor, filters: int) -> tf.Tensor:
+    """[summary]
+
+    Args:
+        tensor (tf.Tensor): [description]
+        filters (int): [description]
+
+    Returns:
+        tf.Tensor: [description]
+    """
 
     inner_filters = filters // 4
     x = bn_relu_conv(tensor, inner_filters, kernel_size=(1, 1), strides=(1, 1))
@@ -38,7 +70,19 @@ def resnet_block(tensor, filters):
     return x
 
 
-def proj_block(tensor, filters, strides):
+def proj_block(
+    tensor: tf.Tensor, filters: int, strides: List[int]
+) -> tf.Tensor:
+    """[summary]
+
+    Args:
+        tensor (tf.Tensor): [description]
+        filters (int): [description]
+        strides (List[int]): [description]
+
+    Returns:
+        tf.Tensor: [description]
+    """
 
     inner_filters = filters // 4
 
@@ -69,7 +113,20 @@ def proj_block(tensor, filters, strides):
     return out
 
 
-def bottleneck_block(tensor, filters, repets, strides):
+def bottleneck_block(
+    tensor: tf.Tensor, filters: int, repets: int, strides: List[int]
+) -> tf.Tensor:
+    """[summary]
+
+    Args:
+        tensor (tf.Tensor): [description]
+        filters (int): [description]
+        repets (int): [description]
+        strides (List[int]): [description]
+
+    Returns:
+        tf.Tensor: [description]
+    """
 
     x = proj_block(tensor, filters, strides)
     for _ in range(repets - 1):
@@ -78,7 +135,21 @@ def bottleneck_block(tensor, filters, repets, strides):
     return x
 
 
-def get_resnet(img_shape, n_classes, repets=5):
+def get_resnet(
+    img_shape: List[int] = img_shape,
+    n_classes: int = n_classes,
+    repets: int = repetitions,
+) -> tf.keras.Model:
+    """[summary]
+
+    Args:
+        img_shape (List[int], optional): [description]. Defaults to img_shape.
+        n_classes (int, optional): [description]. Defaults to n_classes.
+        repets (int, optional): [description]. Defaults to repetitions.
+
+    Returns:
+        tf.keras.Model: [description]
+    """
 
     input = Input(img_shape)
 
@@ -106,7 +177,5 @@ def get_resnet(img_shape, n_classes, repets=5):
 
 if __name__ == "__main__":
 
-    img_shape = (256, 256, 3)
-    model = get_resnet(img_shape=img_shape, n_classes=2)
-
+    model = get_resnet()
     model.summary()

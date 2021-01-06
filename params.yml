@@ -1,3 +1,0 @@
-prepare:
-  split: 0.25
-  seed: 42

@@ -42,7 +42,6 @@ def get_files_and_labels(
 
     Args:
         source_path (str): adresse racine du dossier où chercher les images
-        dans les sous dossiers
         extension (str, optional): type d'image que l'on cherche.
 
     Returns:

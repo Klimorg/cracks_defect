@@ -1,27 +1,31 @@
 import os
 import random
+from collections import Counter
 from pathlib import Path
 from typing import List
-from collections import Counter
 
 import numpy as np
 import pandas as pd
 import typer
+import yaml
 from loguru import logger
 from sklearn.model_selection import train_test_split
 
-RANDOM_SEED = 42
+params = yaml.safe_load(open("params.yml"))["prepare"]
+
+random_seed = params["seed"]
+ratio = params["split"]
 
 app = typer.Typer()
 
 
-def set_seed(RANDOM_SEED: int):
-    os.environ["PYTHONHASHSEED"] = str(RANDOM_SEED)
-    random.seed(RANDOM_SEED)
-    np.random.seed(RANDOM_SEED)
+def set_seed(random_seed: int):
+    os.environ["PYTHONHASHSEED"] = str(random_seed)
+    random.seed(random_seed)
+    np.random.seed(random_seed)
 
 
-set_seed(RANDOM_SEED)
+set_seed(random_seed)
 
 
 @logger.catch()
@@ -69,12 +73,14 @@ def get_files_and_labels(
 
 @logger.catch()
 def save_as_csv(filenames: List[str], labels: List[str], destination: str):
-    """[summary]
+    """Sauvegarde sous la forme d'un csv une dataframe pandas où la première
+    colonne correspond aux adresses des images et la seconde aux labels
+    correspondants.
 
     Args:
-        filenames (List[str]): [description]
-        labels (List[str]): [description]
-        destination (str): [description]
+        filenames (List[str]): Liste des adresses des images, première colonne.
+        labels (List[str]): Liste des labels correspondants, seconde colonne.
+        destination (str): adresse du dossier où est sauvegardé le csv.
     """
     logger.info(
         f"Saving dataset in {destination} with labels ratio {Counter(labels)}"
@@ -86,11 +92,16 @@ def save_as_csv(filenames: List[str], labels: List[str], destination: str):
 
 @logger.catch()
 @app.command()
-def main(repo_path: str = Path(__file__).parent.parent, ratio: float = 0.25):
-    """[summary]
+def main(repo_path: str = Path(__file__).parent.parent, ratio: float = ratio):
+    """Fonction principale.
+
+    - Liste toutes les images via `get_files_and_labels` dans le dossier racine
+    `repo_path`, par défaut `Path(__file__).parent.parent`.
+    - Divise en 3 jeux train, val, & test suivant le `ratio`.
+    - Sauvegarde ces 3 datasets sous la forme d'un csv via `save_as_csv`.
 
     Args:
-        repo_path (str): [description]
+        repo_path (str): Dossier racine.
     """
 
     data_path = repo_path / "datas" / "raw_datas"
@@ -106,10 +117,10 @@ def main(repo_path: str = Path(__file__).parent.parent, ratio: float = 0.25):
         shuffled_images,
         shuffled_labels,
         test_size=ratio,
-        random_state=RANDOM_SEED,
+        random_state=random_seed,
     )
     images_val, images_test, labels_val, labels_test = train_test_split(
-        images_val, labels_val, test_size=0.5, random_state=RANDOM_SEED
+        images_val, labels_val, test_size=0.5, random_state=random_seed
     )
 
     save_as_csv(images_train, labels_train, prepared / "train.csv")

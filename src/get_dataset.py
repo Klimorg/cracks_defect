@@ -11,7 +11,7 @@ import yaml
 from loguru import logger
 from sklearn.model_selection import train_test_split
 
-params = yaml.safe_load(open("params.yml"))["prepare"]
+params = yaml.safe_load(open("configs/params.yml"))["prepare"]
 
 random_seed = params["seed"]
 ratio = params["split"]

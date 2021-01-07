@@ -1,5 +1,5 @@
 # Initialisation du dataset
 
-::: utils.get_subdataset
+::: src.get_dataset
     rendering:
         show_source: true

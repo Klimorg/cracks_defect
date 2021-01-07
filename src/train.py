@@ -1,6 +1,6 @@
-import sys
 from pathlib import Path
 
+import hydra
 import pandas as pd
 import tensorflow as tf
 import yaml
@@ -8,42 +8,52 @@ from sklearn.preprocessing import LabelEncoder
 
 from model.resnet import get_resnet
 
-print(f"{sys.path}")
+# print(f"{sys.path}")
 
 params = yaml.safe_load(open("configs/params.yml"))
 
-random_seed = params["prepare"]["seed"]
-n_classes = params["resnet"]["n_classes"]
-bacth_size = params["train"]["batch_size"]
-repetitions = params["train"]["repetitions"]
-prefetch = params["train"]["prefetch"]
-
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
+# def load_images(data_frame, column_name):
+#     filename_list = data_frame[column_name].to_list()
 
-def load_images(data_frame, column_name):
-    filename_list = data_frame[column_name].to_list()
+#     return filename_list
 
-    return filename_list
+# def load_labels(data_frame, column_name):
+#     label_list = data_frame[column_name].to_list()
+#     classes = list(set(label_list))
+
+#     codec = LabelEncoder()
+#     codec.fit(classes)
+#     label_list = [codec.transform([label])[0] for label in label_list]
+
+#     return label_list
 
 
-def load_labels(data_frame, column_name):
-    label_list = data_frame[column_name].to_list()
-    classes = list(set(label_list))
-    print(f"{classes}")
+@hydra.main(config_path="../configs/", config_name="params.yml")
+def load_data(config):
+
+    repo_path = hydra.utils.get_original_cwd()
+    csv_path = Path(repo_path) / config.prepared_datas.train
+
+    print(f"{csv_path}")
+
+    data_frame = pd.read_csv(csv_path, index_col=0)
+    print(f"{data_frame.head()}")
+
+    filenames = data_frame["filename"].to_list()
+    labels = data_frame["label"].to_list()
+
+    filenames = filenames[:32]
+    labels = labels[:32]
+    classes = list(set(labels))
 
     codec = LabelEncoder()
     codec.fit(classes)
-    label_list = [codec.transform([label])[0] for label in label_list]
+    labels = [codec.transform([label])[0] for label in label_list]
 
-    return label_list
-
-
-def load_data(data_path):
-
-    df = pd.read_csv(data_path)
-    labels = load_labels(data_frame=df, column_name="label")
-    filenames = load_images(data_frame=df, column_name="filename")
+    # labels = load_labels(data_frame=df, column_name="label")
+    # filenames = load_images(data_frame=df, column_name="filename")
 
     return filenames, labels
 
@@ -68,9 +78,7 @@ def train_preprocess(image, label):
     return image, label
 
 
-def create_train_dataset(
-    data_path, batch=bacth_size, repet=repetitions, prefetch=prefetch
-):
+def create_train_dataset(data_path, batch, repet, prefetch):
     repo_path = Path(__file__).parent.parent
     csv_path = repo_path / data_path
 
@@ -86,9 +94,7 @@ def create_train_dataset(
     return dataset
 
 
-def create_val_dataset(
-    data_path, batch=bacth_size, repet=repetitions, prefetch=prefetch
-):
+def create_val_dataset(data_path, batch, repet, prefetch):
     repo_path = Path(__file__).parent.parent
     csv_path = repo_path / data_path
 
@@ -103,12 +109,36 @@ def create_val_dataset(
     return dataset
 
 
-if __name__ == "__main__":
-    data_path = "datas/prepared_datas/train.csv"
-    dataset = create_train_dataset(data_path)
+# pour changer le lr https://stackoverflow.com/questions/59737875/keras-change-learning-rate
 
-    for image, label in dataset.take(1):
-        print(f"{image}, {label}")
+optim = {
+    "rmsprop": tf.keras.optimizers.RMSProp(),
+    "adam": tf.keras.optimizers.Adam(),
+}
+
+
+@hydra.main(config_path="../configs", config_name="params")
+def train_loop(config):
+    # ds, ds_val, epochs, learning_rate, loss_fn, metric_fn, optimizer
+
+    ds = create_train_dataset(
+        data_path=config.prepared_datas.train,
+        batch=config.hyperparameters.batch_size,
+        repet=config.hyperparameters.repetitions,
+        prefetch=config.hyperparameters.prefetch,
+    )
+    ds_val = create_val_dataset(config.prepared_datas.train)
 
     model = get_resnet()
-    model.summary()
+
+    optimizer = optimizer(learning_rate=learning_rate)
+
+    model.compile(optimizer=optimizer, loss=loss_fn, metrics=metric_fn)
+
+    model.fit(ds, epochs=epochs, validation_data=ds_val)
+
+
+if __name__ == "__main__":
+    # train_loop()
+
+    f, la = load_data()

@@ -24,7 +24,7 @@ plugins:
 
 nav:
   - Acceuil: index.md
-  - Initialisation: get_subdatasets.md
+  - Initialisation: get_dataset.md
   - Architecture ResNet: resnet.md
 
 

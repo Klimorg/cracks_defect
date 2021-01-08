@@ -1,0 +1,5 @@
+outs:
+- md5: 6302b2d711a65fdd4188de5788324068.dir
+  size: 18092447
+  nfiles: 3000
+  path: raw_dataset

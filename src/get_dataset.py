@@ -103,7 +103,7 @@ def main(repo_path: str = Path(__file__).parent.parent, ratio: float = ratio):
         repo_path (str): Dossier racine.
     """
 
-    data_path = repo_path / "datas" / "raw_datas"
+    data_path = repo_path / "datas" / "raw_dataset"
     prepared = repo_path / "datas" / "prepared_datas"
 
     raw_images, raw_labels = get_files_and_labels(data_path)

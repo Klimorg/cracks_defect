@@ -43,11 +43,20 @@ def train(config: DictConfig) -> tf.keras.Model:
     """
     repo_path = hydra.utils.get_original_cwd()
 
+    print(f"{repo_path}")
+
+    mlflow_path = Path("file:") / Path(repo_path) / "mlruns"
+
+    print(f"{mlflow_path}")
+
+    mlflow.set_registry_uri(mlflow_path)
     mlflow.set_experiment("test")
 
     logger.info(f"{OmegaConf.to_yaml(config)}")
 
     logger.info("Data loading")
+    # Enable auto-logging to MLflow to capture TensorBoard metrics.
+    mlflow.tensorflow.autolog()
 
     with mlflow.start_run():
 
@@ -85,7 +94,6 @@ def train(config: DictConfig) -> tf.keras.Model:
             loss=config.hyperparameters.loss_fn,
             metrics=[config.hyperparameters.metric_fn],
         )
-        mlflow.tensorflow.autolog()
 
         K.set_value(
             model.optimizer.learning_rate, config.hyperparameters.learning_rate

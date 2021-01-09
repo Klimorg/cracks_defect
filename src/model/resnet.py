@@ -169,9 +169,9 @@ def get_resnet(
 
     x = GlobalAvgPool2D()(x)
     x = Dense(n_classes)(x)
-    x = Activation("softmax")(x)
+    output = Activation("softmax")(x)
 
-    model = Model(input, x)
+    model = Model(input, output)
     return model
 
 
@@ -179,3 +179,4 @@ if __name__ == "__main__":
 
     model = get_resnet()
     model.summary()
+    model.save("model.h5")

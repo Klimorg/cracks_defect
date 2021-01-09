@@ -1,5 +1,5 @@
 small_dataset:
-	bash test.sh 150
+	bash create_dataset.sh 150
 
 normal_dataset:
-	bash test.sh 1500
+	bash create_dataset.sh 1500

@@ -5,7 +5,7 @@ prepare:
 resnet:
   repetitions: 5
   n_classes: 2
-  img_shape: [256,256,3]
+  img_shape: [224,224,3]
 
 prepared_datas:
   train: "datas/prepared_datas/train.csv"
@@ -13,10 +13,12 @@ prepared_datas:
   test: "datas/prepared_datas/test.csv"
 
 hyperparameters:
+  augment: False
   batch_size: 32
   repetitions: 1
   prefetch: 1
-  loss_fn: "categorical_crossentropy"
-  metric_fn: tf.keras.metrics.Accuracy()
   optimizer: "rmsprop"
   learning_rate: 0.001
+  loss_fn: 'categorical_crossentropy'
+  metric_fn: 'accuracy'
+  epochs: 10

@@ -25,7 +25,9 @@ plugins:
 nav:
   - Acceuil: index.md
   - Initialisation: get_dataset.md
+  - Transformation des données: featurize.md
   - Architecture ResNet: resnet.md
+#  - Entraînement: train.md
 
 
 markdown_extensions:

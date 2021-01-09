@@ -11,6 +11,8 @@ from tensorflow.keras import backend as K
 from featurize import create_dataset
 from model.resnet import get_resnet
 
+mlflow.end_run()
+
 
 @logger.catch()
 @hydra.main(config_path="../configs/", config_name="params.yml")
@@ -49,13 +51,16 @@ def train(config: DictConfig) -> tf.keras.Model:
     )
     mlflow.set_experiment(config.mlflow.experiment_name)
 
+    logger.info("MLFlow uris")
     print(f"{repo_path}")
+    print(f"{mlflow.get_tracking_uri()}")
+    # print(f"{mlflow.get_artifact_uri()}")
 
     logger.info(f"{OmegaConf.to_yaml(config)}")
 
     logger.info("Data loading")
     # Enable auto-logging to MLflow to capture TensorBoard metrics.
-    mlflow.tensorflow.autolog()
+    mlflow.tensorflow.autolog(every_n_iter=1)
 
     with mlflow.start_run():
 

@@ -22,3 +22,6 @@ hyperparameters:
   loss_fn: 'categorical_crossentropy'
   metric_fn: 'accuracy'
   epochs: 5
+
+mlflow:
+  experiment_name: test

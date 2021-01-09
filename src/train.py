@@ -41,16 +41,15 @@ def train(config: DictConfig) -> tf.keras.Model:
     Returns:
         tf.keras.Model: [description]
     """
+
     repo_path = hydra.utils.get_original_cwd()
 
+    mlflow.set_tracking_uri(
+        "file://" + hydra.utils.get_original_cwd() + "/mlruns"
+    )
+    mlflow.set_experiment(config.mlflow.experiment_name)
+
     print(f"{repo_path}")
-
-    mlflow_path = Path("file:") / Path(repo_path) / "mlruns"
-
-    print(f"{mlflow_path}")
-
-    mlflow.set_registry_uri(mlflow_path)
-    mlflow.set_experiment("test")
 
     logger.info(f"{OmegaConf.to_yaml(config)}")
 

@@ -14,7 +14,7 @@ prepared_datas:
 
 hyperparameters:
   augment: False
-  batch_size: 32
+  batch_size: 16
   repetitions: 1
   prefetch: 1
   optimizer: "rmsprop"

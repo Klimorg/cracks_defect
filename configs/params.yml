@@ -14,11 +14,11 @@ prepared_datas:
 
 hyperparameters:
   augment: False
-  batch_size: 32
+  batch_size: 16
   repetitions: 1
   prefetch: 1
   optimizer: "rmsprop"
   learning_rate: 0.001
   loss_fn: 'categorical_crossentropy'
   metric_fn: 'accuracy'
-  epochs: 10
+  epochs: 1

@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import hydra
+import mlflow
+import mlflow.tensorflow
 import tensorflow as tf
 from loguru import logger
 from omegaconf import DictConfig, OmegaConf
@@ -27,65 +29,76 @@ def train(config: DictConfig) -> tf.keras.Model:
     Il faut donc ici utiliser `hydra.utils.get_original_cwd()` pour pouvoir
     avoir accès au dossier root `cracks_defect`.
 
+    Pour changer le learning rate d'un optimiseur
+    **après avoir compilé le modèle**, voir la question StackOverflow suivante.
+
+    [Modifier de lr](https://stackoverflow.com/questions/
+    59737875/keras-change-learning-rate)
+
     Args:
         config (DictConfig): [description]
 
     Returns:
         tf.keras.Model: [description]
     """
+    repo_path = hydra.utils.get_original_cwd()
+
+    mlflow.set_experiment("test")
+
     logger.info(f"{OmegaConf.to_yaml(config)}")
 
     logger.info("Data loading")
 
-    repo_path = hydra.utils.get_original_cwd()
+    with mlflow.start_run():
 
-    ds = create_dataset(
-        Path(repo_path) / config.prepared_datas.train,
-        config.hyperparameters.batch_size,
-        config.hyperparameters.repetitions,
-        config.hyperparameters.prefetch,
-        config.hyperparameters.augment,
-    )
+        ds = create_dataset(
+            Path(repo_path) / config.prepared_datas.train,
+            config.hyperparameters.batch_size,
+            config.hyperparameters.repetitions,
+            config.hyperparameters.prefetch,
+            config.hyperparameters.augment,
+        )
 
-    ds_val = create_dataset(
-        Path(repo_path) / config.prepared_datas.val,
-        config.hyperparameters.batch_size,
-        config.hyperparameters.repetitions,
-        config.hyperparameters.prefetch,
-        config.hyperparameters.augment,
-    )
+        ds_val = create_dataset(
+            Path(repo_path) / config.prepared_datas.val,
+            config.hyperparameters.batch_size,
+            config.hyperparameters.repetitions,
+            config.hyperparameters.prefetch,
+            config.hyperparameters.augment,
+        )
 
-    logger.info("Loading model")
+        logger.info("Loading model")
 
-    model = get_resnet()
+        model = get_resnet()
 
-    logger.info("Setting hyperparapmeters")
-    optim = {
-        "rmsprop": tf.keras.optimizers.RMSprop(),
-        "adam": tf.keras.optimizers.Adam(),
-        "nadam": tf.keras.optimizers.Nadam(),
-        "sgd": tf.keras.optimizers.SGD(),
-    }
-    optimizer = optim[config.hyperparameters.optimizer]
+        logger.info("Setting hyperparapmeters")
+        optim = {
+            "rmsprop": tf.keras.optimizers.RMSprop(),
+            "adam": tf.keras.optimizers.Adam(),
+            "nadam": tf.keras.optimizers.Nadam(),
+            "sgd": tf.keras.optimizers.SGD(),
+        }
+        optimizer = optim[config.hyperparameters.optimizer]
 
-    model.compile(
-        optimizer=optimizer,
-        loss=config.hyperparameters.loss_fn,
-        metrics=[config.hyperparameters.metric_fn],
-    )
-    K.set_value(
-        model.optimizer.learning_rate, config.hyperparameters.learning_rate
-    )
+        model.compile(
+            optimizer=optimizer,
+            loss=config.hyperparameters.loss_fn,
+            metrics=[config.hyperparameters.metric_fn],
+        )
+        mlflow.tensorflow.autolog()
 
-    logger.info("Start training")
-    model.fit(ds, epochs=config.hyperparameters.epochs, validation_data=ds_val)
+        K.set_value(
+            model.optimizer.learning_rate, config.hyperparameters.learning_rate
+        )
 
-    logger.info("Training done, saving model")
-    model.save("model.h5")
+        logger.info("Start training")
+        model.fit(
+            ds, epochs=config.hyperparameters.epochs, validation_data=ds_val
+        )
 
+        logger.info("Training done, saving model")
+        model.save("model.h5")
 
-# pour changer le lr :
-# https://stackoverflow.com/questions/59737875/keras-change-learning-rate
 
 if __name__ == "__main__":
     train()

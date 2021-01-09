@@ -27,7 +27,7 @@ nav:
   - Initialisation: get_dataset.md
   - Transformation des données: featurize.md
   - Architecture ResNet: resnet.md
-#  - Entraînement: train.md
+  - Entraînement: train.md
 
 
 markdown_extensions:

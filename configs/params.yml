@@ -21,4 +21,4 @@ hyperparameters:
   learning_rate: 0.001
   loss_fn: 'categorical_crossentropy'
   metric_fn: 'accuracy'
-  epochs: 10
+  epochs: 1

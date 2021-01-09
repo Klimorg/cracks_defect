@@ -48,11 +48,15 @@ def load_labels(data_frame: pd.DataFrame, column_name: str) -> List[int]:
         List[int]: [description]
     """
     label_list = data_frame[column_name].to_list()
-    classes = list(set(label_list))
+    # classes = list(set(label_list))
 
-    codec = LabelEncoder()
-    codec.fit(classes)
-    label_list = [codec.transform([label])[0] for label in label_list]
+    # codec = LabelEncoder()
+    # codec.fit(classes)
+    # label_list = [codec.transform([label])[0] for label in label_list]
+
+    labels = np.unique(label_list, return_inverse=True)[1]
+    dic = dict(zip(label_list, labels))
+    label_list = np.vectorize(dic.get)(label_list)
 
     return label_list
 

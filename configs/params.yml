@@ -5,9 +5,9 @@ prepare:
 resnet:
   repetitions: 5
   n_classes: 2
-  img_shape: [256,256,3]
+  img_shape: [224,224,3]
 
 train:
-  batch_size: 32
+  batch_size: 16
   repetitions: 1
   prefetch: 1

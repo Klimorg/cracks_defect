@@ -45,7 +45,7 @@ def load_data(data_path):
     labels = load_labels(data_frame=df, column_name="label")
     filenames = load_images(data_frame=df, column_name="filename")
 
-    return filenames, labels
+    return filenames[:3000], labels[:3000]
 
 
 def parse_image(filename, label):
@@ -106,9 +106,11 @@ def create_val_dataset(
 if __name__ == "__main__":
     data_path = "datas/prepared_datas/train.csv"
     dataset = create_train_dataset(data_path)
-
-    for image, label in dataset.take(1):
-        print(f"{image}, {label}")
-
     model = get_resnet()
-    model.summary()
+    model.compile(
+        loss=tf.keras.losses.CategoricalCrossentropy(),
+        optimizer="adam",
+        metrics=["acc"],
+    )
+
+    model.fit(dataset, epochs=10)

@@ -25,9 +25,6 @@ def set_seed(random_seed: int):
     np.random.seed(random_seed)
 
 
-set_seed(random_seed)
-
-
 @logger.catch()
 def get_files_and_labels(
     source_path: str, extension: str = ".jpg"
@@ -102,6 +99,7 @@ def main(repo_path: str = Path(__file__).parent.parent, ratio: float = ratio):
     Args:
         repo_path (str): Dossier racine.
     """
+    set_seed(random_seed)
 
     data_path = repo_path / "datas" / "raw_dataset"
     prepared = repo_path / "datas" / "prepared_datas"

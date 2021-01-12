@@ -16,7 +16,7 @@ from tensorflow.keras.layers import (
 
 params = yaml.safe_load(open("configs/params.yml"))["resnet"]
 
-repetitions = params["repetitions"]
+repetitions = params["repetitions_block"]
 n_classes = params["n_classes"]
 img_shape = params["img_shape"]
 

@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import yaml
-from sklearn.preprocessing import LabelEncoder
+from loguru import logger
 
 params = yaml.safe_load(open("configs/params.yml"))
 n_classes = params["resnet"]["n_classes"]
@@ -48,7 +48,8 @@ def load_labels(data_frame: pd.DataFrame, column_name: str) -> List[int]:
         List[int]: [description]
     """
     label_list = data_frame[column_name].to_list()
-    # classes = list(set(label_list))
+    classes = list(set(label_list))
+    logger.info(f"Found following labels {classes}")
 
     # codec = LabelEncoder()
     # codec.fit(classes)
@@ -56,8 +57,9 @@ def load_labels(data_frame: pd.DataFrame, column_name: str) -> List[int]:
 
     labels = np.unique(label_list, return_inverse=True)[1]
     dic = dict(zip(label_list, labels))
+    logger.info(f"Dictionnary creation {dic}")
     label_list = np.vectorize(dic.get)(label_list)
-
+    # logger.info(f"Found following label_list {label_list}")
     return label_list
 
 
@@ -149,6 +151,4 @@ def create_dataset(
 
 if __name__ == "__main__":
 
-    ds = create_dataset(
-        "datas/prepared_datas/train.csv", 16, 1, 1, 42, augment=False
-    )
+    ds = create_dataset("datas/prepared_datas/train.csv", 16, 1, 1, 42)

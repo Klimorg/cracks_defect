@@ -1,0 +1,7 @@
+# @package _group_
+class_name: model.resnet.get_cnn
+name: "ResNetV2"
+params:
+  n_classes: ${datas.n_classes}
+  img_shape: ${datas.img_shape}
+  repets: 2

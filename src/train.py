@@ -1,20 +1,16 @@
 from pathlib import Path
 
 import hydra
-import mlflow
-import mlflow.tensorflow
-import tensorflow as tf
+import mlflow  # type: ignore
+import mlflow.tensorflow  # type: ignore
+import tensorflow as tf  # type: ignore
 from loguru import logger
 from omegaconf import DictConfig, OmegaConf
-from tensorflow.keras import backend as K
-import os
-import numpy as np
-import random
 
-from featurize import create_dataset
-from model.resnet import get_resnet
-from model.wide_resnet import get_wide_resnet
-from tensorflow.keras.callbacks import Callback
+from featurize import featurize  # type: ignore
+
+from tensorflow.keras.callbacks import Callback  # type: ignore
+from utils import config_to_hydra_dict, set_seed, load_obj
 
 
 class MlFlowCallback(Callback):
@@ -23,7 +19,7 @@ class MlFlowCallback(Callback):
 
 
 @logger.catch()
-@hydra.main(config_path="../configs/", config_name="params.yml")
+@hydra.main(config_path="../configs/", config_name="params.yaml")
 def train(config: DictConfig) -> tf.keras.Model:
     """[summary]
 
@@ -51,6 +47,7 @@ def train(config: DictConfig) -> tf.keras.Model:
     Returns:
         tf.keras.Model: [description]
     """
+    conf_dict = config_to_hydra_dict(config)
 
     repo_path = hydra.utils.get_original_cwd()
 
@@ -58,106 +55,91 @@ def train(config: DictConfig) -> tf.keras.Model:
         "file://" + hydra.utils.get_original_cwd() + "/mlruns"
     )
     mlflow.set_experiment(config.mlflow.experiment_name)
-    # mlflow.entities.Experiment(
-    #     artifact_location=hydra.utils.get_original_cwd() + "/mlruns/artifact"
-    # )
 
-    logger.info("MLFlow uris")
-    print(f"{repo_path}")
-    print(f"{mlflow.get_tracking_uri()}")
+    # logger.info("MLFlow uris")
+    # print(f"{repo_path}")
+    # print(f"{mlflow.get_tracking_uri()}")
     # print(f"{mlflow.get_artifact_uri()}")
 
     logger.info(f"{OmegaConf.to_yaml(config)}")
 
-    os.environ["PYTHONHASHSEED"] = str(config.prepare.seed)
-    random.seed(config.prepare.seed)
-    np.random.seed(config.prepare.seed)
-    tf.random.set_seed(config.prepare.seed)
+    set_seed(config.prepare.seed)
 
     logger.info("Data loading")
-    # Enable auto-logging to MLflow to capture TensorBoard metrics.
 
     with mlflow.start_run():
 
         mlflow.tensorflow.autolog(every_n_iter=1)
-        train_params = {
-            "hp_batch_size": config.hyperparameters.batch_size,
-            "hp_repetitions": config.hyperparameters.repetitions,
-            "hp_prefetch": config.hyperparameters.prefetch,
-            "hp_augment": config.hyperparameters.augment,
-            # "epochs": config.hyperparameters.epochs,
-            # "loss_fn": config.hyperparameters.loss_fn,
-            # "metric_fn": config.hyperparameters.metric_fn,
-        }
-        model_params = {
-            "model_name": config.resnet.name,
-            "model_repetitions": config.resnet.repetitions_block,
-            "model_n_classes": config.resnet.n_classes,
-            "model_img_shape": config.resnet.img_shape,
-        }
+        mlflow.log_params(conf_dict)
 
-        mlflow.log_params(train_params)
-        mlflow.log_params(model_params)
-
-        ds = create_dataset(
-            Path(repo_path) / config.prepared_datas.train,
-            config.hyperparameters.batch_size,
-            config.hyperparameters.repetitions,
-            config.hyperparameters.prefetch,
-            config.hyperparameters.augment,
+        ft = featurize(
+            n_classes=config.datas.n_classes,
+            img_shape=config.datas.img_shape,
+            random_seed=config.prepare.seed,
         )
 
-        ds_val = create_dataset(
-            Path(repo_path) / config.prepared_datas.val,
-            config.hyperparameters.batch_size,
-            config.hyperparameters.repetitions,
-            config.hyperparameters.prefetch,
-            config.hyperparameters.augment,
+        ds = ft.create_dataset(
+            Path(repo_path) / config.datasets.prepared_datas.train,
+            config.datasets.params.batch_size,
+            config.datasets.params.repetitions,
+            config.datasets.params.prefetch,
+            config.datasets.params.augment,
+        )
+
+        ds_val = ft.create_dataset(
+            Path(repo_path) / config.datasets.prepared_datas.val,
+            config.datasets.params.batch_size,
+            config.datasets.params.repetitions,
+            config.datasets.params.prefetch,
+            config.datasets.params.augment,
         )
 
         logger.info("Loading model")
 
-        model = get_wide_resnet()
+        cnn = load_obj(config.cnn.class_name)
+        model = cnn(**conf_dict["cnn.params"])
 
-        logger.info("Compile Optimizer, Loss, Metrics")
-        optim = {
-            "rmsprop": tf.keras.optimizers.RMSprop(),
-            "adam": tf.keras.optimizers.Adam(),
-            "nadam": tf.keras.optimizers.Nadam(),
-            "sgd": tf.keras.optimizers.SGD(),
-        }
-        optimizer = optim[config.hyperparameters.optimizer]
+        optim = load_obj(config.optimizer.class_name)
+        optimizer = optim(**conf_dict["optimizer.params"])
 
-        metrics = []
-        for metric in config.hyperparameters.metric_fn:
-            metrics.append(metric)
+        loss = load_obj(config.losses.class_name)
+        loss = loss(**conf_dict["losses.params"])
+
+        """
+        https://stackoverflow.com/questions/59635474/
+        whats-difference-between-using-metrics-acc-and-tf-keras-metrics-accuracy
+
+        I'll just add that as of tf v2.2 in training.py the docs say
+        "When you pass the strings 'accuracy' or 'acc', we convert this to
+        one of tf.keras.metrics.BinaryAccuracy,
+        tf.keras.metrics.CategoricalAccuracy,
+        tf.keras.metrics.SparseCategoricalAccuracy based on the loss function
+        used and the model output shape. We do a similar conversion
+        for the strings 'crossentropy' and 'ce' as well."
+        """
+
+        metric = load_obj(config.metrics.class_name)
+        metric = metric()
 
         model.compile(
-            optimizer=optimizer,
-            loss=config.hyperparameters.loss_fn,
-            metrics=metrics,
+            optimizer=optimizer, loss=loss, metrics=[metric],
         )
-
-        # print(f"{model.optimizer}, {model.loss}, {model.metrics}")
-
-        K.set_value(
-            model.optimizer.learning_rate, config.hyperparameters.learning_rate
-        )
+        # print(f"optim config : {model.optimizer.get_config()}")
 
         # mlflow.log_params(model.optimizer.get_config())
 
         logger.info("Start training")
         model.fit(
             ds,
-            epochs=config.hyperparameters.epochs,
+            epochs=config.training.epochs,
             validation_data=ds_val,
-            # callbacks=[MlFlowCallback()],
+            callbacks=[MlFlowCallback()],
         )
 
         # mlflow.keras.log_model(model, "models")
 
-        # logger.info("Training done, saving model")
-        # model.save("model.h5")
+    # logger.info("Training done, saving model")
+    # model.save("model.h5")
 
 
 if __name__ == "__main__":

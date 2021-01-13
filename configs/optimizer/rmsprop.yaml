@@ -1,0 +1,9 @@
+# @package _group_
+class_name: tensorflow.keras.optimizers.RMSprop
+params:
+  learning_rate: ${training.lr}
+  centered: False
+  decay: 0.0
+  epsilon: 1e-07
+  momentum: 0.0
+  rho: 0.9

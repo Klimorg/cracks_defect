@@ -1,17 +1,16 @@
-import os
 import random
 from collections import Counter
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
-import numpy as np
 import pandas as pd
 import typer
 import yaml
 from loguru import logger
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split  # type: ignore
+from utils import set_seed
 
-params = yaml.safe_load(open("configs/params.yml"))["prepare"]
+params = yaml.safe_load(open("configs/params.yaml"))["prepare"]
 
 random_seed = params["seed"]
 ratio = params["split"]
@@ -19,16 +18,10 @@ ratio = params["split"]
 app = typer.Typer()
 
 
-def set_seed(random_seed: int):
-    os.environ["PYTHONHASHSEED"] = str(random_seed)
-    random.seed(random_seed)
-    np.random.seed(random_seed)
-
-
 @logger.catch()
 def get_files_and_labels(
-    source_path: str, extension: str = ".jpg"
-) -> List[str]:
+    source_path: Path, extension: str = ".jpg"
+) -> Tuple[List[Path], List[str]]:
     """Liste l'ensemble des images existantes suivant l'extension choisie
     dans tous les sous dossiers présents dans source_path.
 
@@ -68,7 +61,7 @@ def get_files_and_labels(
 
 
 @logger.catch()
-def save_as_csv(filenames: List[str], labels: List[str], destination: str):
+def save_as_csv(filenames: List[Path], labels: List[str], destination: Path):
     """Sauvegarde sous la forme d'un csv une dataframe pandas où la première
     colonne correspond aux adresses des images et la seconde aux labels
     correspondants.
@@ -81,14 +74,13 @@ def save_as_csv(filenames: List[str], labels: List[str], destination: str):
     logger.info(
         f"Saving dataset in {destination} with labels ratio {Counter(labels)}"
     )
-    data_dictionary = {"filename": filenames, "label": labels}
-    data_frame = pd.DataFrame(data_dictionary)
+    data_frame = pd.DataFrame({"filename": filenames, "label": labels})
     data_frame.to_csv(destination)
 
 
 @logger.catch()
 @app.command()
-def main(repo_path: str = Path(__file__).parent.parent, ratio: float = ratio):
+def main(repo_path: Path = Path(__file__).parent.parent, ratio: float = ratio):
     """Fonction principale.
 
     - Liste toutes les images via `get_files_and_labels` dans le dossier racine

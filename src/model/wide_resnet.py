@@ -1,9 +1,10 @@
-from typing import List
+from typing import List, Tuple
 
-import tensorflow as tf
-import yaml
-from tensorflow.keras import Model
-from tensorflow.keras.layers import (
+import tensorflow as tf  # type: ignore
+
+# import yaml
+from tensorflow.keras import Model  # type: ignore
+from tensorflow.keras.layers import (  # type: ignore
     Activation,
     Add,
     BatchNormalization,
@@ -14,19 +15,19 @@ from tensorflow.keras.layers import (
     ReLU,
 )
 
-params = yaml.safe_load(open("configs/params.yml"))["wide_resnet"]
+# params = yaml.safe_load(open("configs/params.yaml"))["wide_resnet"]
 
-repetitions = params["repetitions_block"]
-n_classes = params["n_classes"]
-width_factor = params["width_factor"]
-img_shape = params["img_shape"]
+# repetitions = params["repetitions_block"]
+# n_classes = params["n_classes"]
+# width_factor = params["width_factor"]
+# img_shape = params["img_shape"]
 
 
 def wide_bn_relu_conv(
     tensor: tf.Tensor,
     filters: int,
-    kernel_size: List[int],
-    strides: List[int],
+    kernel_size: Tuple[int, int],
+    strides: Tuple[int, int],
     width_factor: int,
 ) -> tf.Tensor:
     """[summary]
@@ -41,7 +42,7 @@ def wide_bn_relu_conv(
         tf.Tensor: [description]
     """
 
-    # shortcut strem
+    # shortcut stream
     shortcut = Conv2D(
         filters=filters * width_factor,
         kernel_size=(1, 1),
@@ -68,7 +69,10 @@ def wide_bn_relu_conv(
 
 
 def wide_resnet_block(
-    tensor: tf.Tensor, filters: int, width_factor: int, strides: List[int]
+    tensor: tf.Tensor,
+    filters: int,
+    width_factor: int,
+    strides: Tuple[int, int],
 ) -> tf.Tensor:
     """[summary]
 
@@ -79,7 +83,6 @@ def wide_resnet_block(
     Returns:
         tf.Tensor: [description]
     """
-    # main stream
     x = wide_bn_relu_conv(
         tensor,
         filters,
@@ -102,7 +105,7 @@ def wide_block(
     tensor: tf.Tensor,
     filters: int,
     width_factor: int,
-    strides: List[int],
+    strides: Tuple[int, int],
     repets: int,
 ) -> tf.Tensor:
 
@@ -115,11 +118,8 @@ def wide_block(
     return x
 
 
-def get_wide_resnet(
-    img_shape: List[int] = img_shape,
-    n_classes: int = n_classes,
-    width_factor: int = width_factor,
-    repets: int = repetitions,
+def get_cnn(
+    img_shape: List[int], n_classes: int, width_factor: int, repets: int,
 ) -> tf.keras.Model:
 
     input = Input(img_shape)
@@ -160,5 +160,5 @@ def get_wide_resnet(
 
 
 if __name__ == "__main__":
-    model = get_wide_resnet()
+    model = get_cnn()
     model.summary()

@@ -1,0 +1,6 @@
+# @package _group_
+class_name: tensorflow.keras.losses.CategoricalCrossentropy
+params:
+  from_logits: False
+  label_smoothing: 0
+  reduction: "auto"

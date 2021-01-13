@@ -1,0 +1,9 @@
+# @package _group_
+class_name: tensorflow.keras.optimizers.Adam
+params:
+  learning_rate: ${training.lr}
+  amsgrad: False
+  beta_1: 0.9
+  beta_2: 0.999
+  decay: 0.0
+  epsilon: 1e-07

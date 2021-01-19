@@ -10,7 +10,7 @@ from omegaconf import DictConfig, OmegaConf
 from featurize import featurize  # type: ignore
 
 from tensorflow.keras.callbacks import Callback  # type: ignore
-from utils import config_to_hydra_dict, set_seed, load_obj
+from utils import config_to_hydra_dict, set_seed, load_obj  # type: ignore
 
 
 class MlFlowCallback(Callback):
@@ -56,19 +56,17 @@ def train(config: DictConfig) -> tf.keras.Model:
     )
     mlflow.set_experiment(config.mlflow.experiment_name)
 
-    # logger.info("MLFlow uris")
-    # print(f"{repo_path}")
-    # print(f"{mlflow.get_tracking_uri()}")
-    # print(f"{mlflow.get_artifact_uri()}")
-
     logger.info(f"{OmegaConf.to_yaml(config)}")
 
     set_seed(config.prepare.seed)
 
     logger.info("Data loading")
 
-    with mlflow.start_run():
+    logger.info(f"Root path of the folder : {repo_path}")
+    logger.info(f"MLFlow uri : {mlflow.get_tracking_uri()}")
+    with mlflow.start_run(run_name=config.mlflow.run_name) as run:
 
+        logger.info(f"Run infos : {run.info}")
         mlflow.tensorflow.autolog(every_n_iter=1)
         mlflow.log_params(conf_dict)
 
@@ -94,7 +92,7 @@ def train(config: DictConfig) -> tf.keras.Model:
             config.datasets.params.augment,
         )
 
-        logger.info("Loading model")
+        logger.info("Compiling model")
 
         cnn = load_obj(config.cnn.class_name)
         model = cnn(**conf_dict["cnn.params"])
@@ -124,22 +122,19 @@ def train(config: DictConfig) -> tf.keras.Model:
         model.compile(
             optimizer=optimizer, loss=loss, metrics=[metric],
         )
-        # print(f"optim config : {model.optimizer.get_config()}")
-
-        # mlflow.log_params(model.optimizer.get_config())
 
         logger.info("Start training")
         model.fit(
             ds,
             epochs=config.training.epochs,
             validation_data=ds_val,
-            callbacks=[MlFlowCallback()],
+            # callbacks=[MlFlowCallback()],
         )
 
         # mlflow.keras.log_model(model, "models")
 
-    # logger.info("Training done, saving model")
-    # model.save("model.h5")
+    logger.info("Training done, saving model")
+    model.save(repo_path / Path("dvc_saved_models") / "model.h5")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,20 @@
+stages:
+  prepare:
+    cmd: python src/get_dataset.py
+    deps:
+      - src/get_dataset.py
+      - datas/raw_dataset
+    outs:
+      - datas/prepared_datas/train.csv
+      - datas/prepared_datas/val.csv
+      - datas/prepared_datas/test.csv   
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - datas/prepared_datas/train.csv
+      - datas/prepared_datas/val.csv
+      - datas/prepared_datas/test.csv
+
+#  evaluate:

@@ -6,6 +6,6 @@ prepared_datas:
 
 params:
   augment: True
-  batch_size: 16
+  batch_size: 32
   repetitions: 1
   prefetch: 1

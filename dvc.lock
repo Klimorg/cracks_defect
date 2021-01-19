@@ -1,0 +1,12 @@
+prepare:
+  cmd: python src/get_dataset.py
+  deps:
+  - path: src/get_dataset.py
+    md5: b47459d09154a3c600e22a4b6cbe2e05
+    size: 3928
+train:
+  cmd: python src/train.py
+  deps:
+  - path: src/train.py
+    md5: 222f1e7a821af6609072adeeaf9f62d3
+    size: 4616

@@ -1,11 +1,15 @@
 from pathlib import Path
 from typing import Any, Dict
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 import os
 import random
 import tensorflow as tf
 import numpy as np
 import importlib
+import collections
+
+# https://github.com/Erlemar/pytorch_tempest/blob/
+# master/src/utils/technical_utils.py
 
 
 def config_to_hydra_dict(cfg: DictConfig) -> Dict:
@@ -78,3 +82,28 @@ def set_seed(random_seed: int) -> None:
     np.random.seed(random_seed)
     tf.random.set_seed(random_seed)
     os.environ["TF_DETERMINISTIC_OPS"] = "1"
+
+
+def flatten_omegaconf(d, sep="_"):
+    d = OmegaConf.to_container(d)
+
+    obj = collections.OrderedDict()
+
+    def recurse(t, parent_key=""):
+
+        if isinstance(t, list):
+            for i, _ in enumerate(t):
+                recurse(
+                    t[i], parent_key + sep + str(i) if parent_key else str(i)
+                )
+        elif isinstance(t, dict):
+            for k, v in t.items():
+                recurse(v, parent_key + sep + k if parent_key else k)
+        else:
+            obj[parent_key] = t
+
+    recurse(d)
+    obj = {k: v for k, v in obj.items() if isinstance(v, (int, float))}
+    # obj = {k: v for k, v in obj.items()}
+
+    return obj

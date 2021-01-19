@@ -51,6 +51,7 @@ def get_files_and_labels(
 
     logger.info("Creating images, labels full datasets.")
     for image_path in images_paths:
+        # filename = image_path.relative_to(source_path)
         filename = image_path.absolute()
         folder = image_path.parent.name
         if image_path.parent in FOLDERS:

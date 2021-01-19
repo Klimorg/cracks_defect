@@ -3,16 +3,7 @@ from typing import List, Tuple, Any
 import numpy as np
 import pandas as pd
 import tensorflow as tf  # type: ignore
-
-# import yaml
 from loguru import logger
-
-# datas_params = yaml.safe_load(open("configs/datas/datas.yaml"))
-# train_params = yaml.safe_load(open("configs/training/default_training.yaml"))
-
-# n_classes = datas_params["n_classes"]
-# img_shape = datas_params["img_shape"]
-# random_seed = train_params["seed"]
 
 
 class featurize:

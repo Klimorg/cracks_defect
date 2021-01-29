@@ -133,8 +133,8 @@ def train(config: DictConfig) -> tf.keras.Model:
 
         # mlflow.keras.log_model(model, "models")
 
-    logger.info("Training done, saving model")
-    model.save(repo_path / Path("dvc_saved_models") / "model.h5")
+    # logger.info("Training done, saving model")
+    # model.save(repo_path / Path("dvc_saved_models") / "model.h5")
 
 
 if __name__ == "__main__":

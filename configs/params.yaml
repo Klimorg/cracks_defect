@@ -1,7 +1,7 @@
 defaults:
   - optimizer: adam
   - training: default_training
-  - cnn: wide_resnet
+  - cnn: resnet
   - datas: datas
   - datasets: datasets
   - losses: categorical_crossentropy

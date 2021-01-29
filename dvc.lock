@@ -1,12 +1,35 @@
 prepare:
   cmd: python src/get_dataset.py
   deps:
+  - path: datas/raw_dataset
+    md5: 2cb6bff7b682a2d2c192cca90bcfc730.dir
+    size: 7307648
+    nfiles: 1200
   - path: src/get_dataset.py
     md5: b47459d09154a3c600e22a4b6cbe2e05
     size: 3928
+  outs:
+  - path: datas/prepared_datas/test.csv
+    md5: de3e4235250dd7566d9eeca6d042ba1e
+    size: 12056
+  - path: datas/prepared_datas/train.csv
+    md5: 218842a9be0f412e647ba2ece3a6f29e
+    size: 72806
+  - path: datas/prepared_datas/val.csv
+    md5: 3d67e3ab14b85ec5bbdf9bb4aac6997f
+    size: 12056
 train:
   cmd: python src/train.py
   deps:
+  - path: datas/prepared_datas/test.csv
+    md5: de3e4235250dd7566d9eeca6d042ba1e
+    size: 12056
+  - path: datas/prepared_datas/train.csv
+    md5: 218842a9be0f412e647ba2ece3a6f29e
+    size: 72806
+  - path: datas/prepared_datas/val.csv
+    md5: 3d67e3ab14b85ec5bbdf9bb4aac6997f
+    size: 12056
   - path: src/train.py
-    md5: 222f1e7a821af6609072adeeaf9f62d3
-    size: 4616
+    md5: 6cc7d43e80ddffd4bbfe4d7df1ce1295
+    size: 4620

@@ -1,9 +1,10 @@
-from typing import List
+from typing import List, Tuple
 
-import tensorflow as tf
-import yaml
-from tensorflow.keras import Model
-from tensorflow.keras.layers import (
+import tensorflow as tf  # type: ignore
+
+# import yaml
+from tensorflow.keras import Model  # type: ignore
+from tensorflow.keras.layers import (  # type: ignore
     Activation,
     Add,
     BatchNormalization,
@@ -14,15 +15,18 @@ from tensorflow.keras.layers import (
     ReLU,
 )
 
-params = yaml.safe_load(open("configs/params.yml"))["resnet"]
+# params = yaml.safe_load(open("configs/params.yaml"))["resnet"]
 
-repetitions = params["repetitions"]
-n_classes = params["n_classes"]
-img_shape = params["img_shape"]
+# repetitions = params["repetitions_block"]
+# n_classes = params["n_classes"]
+# img_shape = params["img_shape"]
 
 
 def bn_relu_conv(
-    tensor: tf.Tensor, filters: int, kernel_size: List[int], strides: List[int]
+    tensor: tf.Tensor,
+    filters: int,
+    kernel_size: Tuple[int, int],
+    strides: Tuple[int, int],
 ) -> tf.Tensor:
     """[summary]
 
@@ -71,7 +75,7 @@ def resnet_block(tensor: tf.Tensor, filters: int) -> tf.Tensor:
 
 
 def proj_block(
-    tensor: tf.Tensor, filters: int, strides: List[int]
+    tensor: tf.Tensor, filters: int, strides: Tuple[int, int]
 ) -> tf.Tensor:
     """[summary]
 
@@ -114,7 +118,7 @@ def proj_block(
 
 
 def bottleneck_block(
-    tensor: tf.Tensor, filters: int, repets: int, strides: List[int]
+    tensor: tf.Tensor, filters: int, repets: int, strides: Tuple[int, int]
 ) -> tf.Tensor:
     """[summary]
 
@@ -135,10 +139,10 @@ def bottleneck_block(
     return x
 
 
-def get_resnet(
-    img_shape: List[int] = img_shape,
-    n_classes: int = n_classes,
-    repets: int = repetitions,
+def get_cnn(
+    img_shape: List[int],  # = img_shape,
+    n_classes: int,  # = n_classes,
+    repets: int,  # = repetitions,
 ) -> tf.keras.Model:
     """[summary]
 
@@ -169,13 +173,14 @@ def get_resnet(
 
     x = GlobalAvgPool2D()(x)
     x = Dense(n_classes)(x)
-    x = Activation("softmax")(x)
+    output = Activation("softmax")(x)
 
-    model = Model(input, x)
+    model = Model(input, output)
     return model
 
 
 if __name__ == "__main__":
 
-    model = get_resnet()
+    model = get_cnn()
     model.summary()
+    model.save("model.h5")

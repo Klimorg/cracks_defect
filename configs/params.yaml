@@ -1,0 +1,23 @@
+defaults:
+  - optimizer: adam
+  - training: default_training
+  - cnn: resnet
+  - datas: datas
+  - datasets: datasets
+  - losses: categorical_crossentropy
+  - metrics: categorical_accuracy
+
+prepare:
+  split: 0.25
+  seed: 42
+
+mlflow:
+  experiment_name: version_hydra_complète
+  run_name: ${cnn.name}_${datas.n_classes}_${datas.img_shape}_${datasets.params.batch_size}_${training.lr}_${now:%Y-%m-%d_%H-%M-%S}
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S} #_${hydra.job.override_dirname}
+  sweep:
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}
+    subdir: ${hydra.job.override_dirname}

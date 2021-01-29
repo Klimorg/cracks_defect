@@ -1,116 +1,141 @@
-import sys
 from pathlib import Path
 
-import pandas as pd
-import tensorflow as tf
-import yaml
-from sklearn.preprocessing import LabelEncoder
+import hydra
+import mlflow  # type: ignore
+import mlflow.tensorflow  # type: ignore
+import tensorflow as tf  # type: ignore
+from loguru import logger
+from omegaconf import DictConfig, OmegaConf
 
-from model.resnet import get_resnet
+from featurize import featurize  # type: ignore
 
-print(f"{sys.path}")
-
-params = yaml.safe_load(open("configs/params.yml"))
-
-random_seed = params["prepare"]["seed"]
-n_classes = params["resnet"]["n_classes"]
-bacth_size = params["train"]["batch_size"]
-repetitions = params["train"]["repetitions"]
-prefetch = params["train"]["prefetch"]
-
-AUTOTUNE = tf.data.experimental.AUTOTUNE
+from tensorflow.keras.callbacks import Callback  # type: ignore
+from utils import config_to_hydra_dict, set_seed, load_obj  # type: ignore
 
 
-def load_images(data_frame, column_name):
-    filename_list = data_frame[column_name].to_list()
-
-    return filename_list
-
-
-def load_labels(data_frame, column_name):
-    label_list = data_frame[column_name].to_list()
-    classes = list(set(label_list))
-    print(f"{classes}")
-
-    codec = LabelEncoder()
-    codec.fit(classes)
-    label_list = [codec.transform([label])[0] for label in label_list]
-
-    return label_list
+class MlFlowCallback(Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        mlflow.log_metrics(logs, step=epoch)
 
 
-def load_data(data_path):
+@logger.catch()
+@hydra.main(config_path="../configs/", config_name="params.yaml")
+def train(config: DictConfig) -> tf.keras.Model:
+    """[summary]
 
-    df = pd.read_csv(data_path)
-    labels = load_labels(data_frame=df, column_name="label")
-    filenames = load_images(data_frame=df, column_name="filename")
+    Lorsque que l'on travaille avec Hydra, toute la logique de la fonction doit
+    être contenu dans `main()`, on ne peut pas faire appel à des fonctions
+    tierces extérieures à `main()`, il faut tout coder dedans.
 
-    return filenames[:3000], labels[:3000]
+    De même faire attention au dossier root : hydra modifie le dossier root :
 
+    Path(__file__).parent.parent donnera bien `.` mais cette racine est située
+    dans le dossier `outputs`, et non dans vrai dossier racine `cracks_defect`.
 
-def parse_image(filename, label):
-    # convert the label to one-hot encoding
-    label = tf.one_hot(label, n_classes)
-    # decode image
-    image = tf.io.read_file(filename)
-    # Don't use tf.image.decode_image, or the output shape will be undefined
-    image = tf.image.decode_jpeg(image)
-    # This will convert to float values in [0, 1]
-    image = tf.image.convert_image_dtype(image, tf.float32)
-    image = tf.image.resize(image, [224, 224])
-    return image, label
+    Il faut donc ici utiliser `hydra.utils.get_original_cwd()` pour pouvoir
+    avoir accès au dossier root `cracks_defect`.
 
+    Pour changer le learning rate d'un optimiseur
+    **après avoir compilé le modèle**, voir la question StackOverflow suivante.
 
-def train_preprocess(image, label):
-    image = tf.image.random_flip_left_right(image)
-    image = tf.image.random_flip_up_down(image)
+    [Modifier de lr](https://stackoverflow.com/questions/
+    59737875/keras-change-learning-rate)
 
-    return image, label
+    Args:
+        config (DictConfig): [description]
 
+    Returns:
+        tf.keras.Model: [description]
+    """
+    conf_dict = config_to_hydra_dict(config)
 
-def create_train_dataset(
-    data_path, batch=bacth_size, repet=repetitions, prefetch=prefetch
-):
-    repo_path = Path(__file__).parent.parent
-    csv_path = repo_path / data_path
+    repo_path = hydra.utils.get_original_cwd()
 
-    features, labels = load_data(csv_path)
+    mlflow.set_tracking_uri(
+        "file://" + hydra.utils.get_original_cwd() + "/mlruns"
+    )
+    mlflow.set_experiment(config.mlflow.experiment_name)
 
-    dataset = tf.data.Dataset.from_tensor_slices((features, labels))
-    dataset = dataset.shuffle(len(features), seed=random_seed)
-    dataset = dataset.repeat(repet)
-    dataset = dataset.map(parse_image, num_parallel_calls=AUTOTUNE)
-    dataset = dataset.map(train_preprocess, num_parallel_calls=AUTOTUNE)
-    dataset = dataset.batch(batch)
-    dataset = dataset.prefetch(prefetch)
-    return dataset
+    logger.info(f"{OmegaConf.to_yaml(config)}")
 
+    set_seed(config.prepare.seed)
 
-def create_val_dataset(
-    data_path, batch=bacth_size, repet=repetitions, prefetch=prefetch
-):
-    repo_path = Path(__file__).parent.parent
-    csv_path = repo_path / data_path
+    logger.info("Data loading")
 
-    features, labels = load_data(csv_path)
+    logger.info(f"Root path of the folder : {repo_path}")
+    logger.info(f"MLFlow uri : {mlflow.get_tracking_uri()}")
+    with mlflow.start_run(run_name=config.mlflow.run_name) as run:
 
-    dataset = tf.data.Dataset.from_tensor_slices((features, labels))
-    dataset = dataset.shuffle(len(features), seed=random_seed)
-    dataset = dataset.repeat(repet)
-    dataset = dataset.map(parse_image, num_parallel_calls=AUTOTUNE)
-    dataset = dataset.batch(batch)
-    dataset = dataset.prefetch(prefetch)
-    return dataset
+        logger.info(f"Run infos : {run.info}")
+        mlflow.tensorflow.autolog(every_n_iter=1)
+        mlflow.log_params(conf_dict)
+
+        ft = featurize(
+            n_classes=config.datas.n_classes,
+            img_shape=config.datas.img_shape,
+            random_seed=config.prepare.seed,
+        )
+
+        ds = ft.create_dataset(
+            Path(repo_path) / config.datasets.prepared_datas.train,
+            config.datasets.params.batch_size,
+            config.datasets.params.repetitions,
+            config.datasets.params.prefetch,
+            config.datasets.params.augment,
+        )
+
+        ds_val = ft.create_dataset(
+            Path(repo_path) / config.datasets.prepared_datas.val,
+            config.datasets.params.batch_size,
+            config.datasets.params.repetitions,
+            config.datasets.params.prefetch,
+            config.datasets.params.augment,
+        )
+
+        logger.info("Compiling model")
+
+        cnn = load_obj(config.cnn.class_name)
+        model = cnn(**conf_dict["cnn.params"])
+
+        optim = load_obj(config.optimizer.class_name)
+        optimizer = optim(**conf_dict["optimizer.params"])
+
+        loss = load_obj(config.losses.class_name)
+        loss = loss(**conf_dict["losses.params"])
+
+        """
+        https://stackoverflow.com/questions/59635474/
+        whats-difference-between-using-metrics-acc-and-tf-keras-metrics-accuracy
+
+        I'll just add that as of tf v2.2 in training.py the docs say
+        "When you pass the strings 'accuracy' or 'acc', we convert this to
+        one of tf.keras.metrics.BinaryAccuracy,
+        tf.keras.metrics.CategoricalAccuracy,
+        tf.keras.metrics.SparseCategoricalAccuracy based on the loss function
+        used and the model output shape. We do a similar conversion
+        for the strings 'crossentropy' and 'ce' as well."
+        """
+
+        metric = load_obj(config.metrics.class_name)
+        metric = metric()
+
+        model.compile(
+            optimizer=optimizer, loss=loss, metrics=[metric],
+        )
+
+        logger.info("Start training")
+        model.fit(
+            ds,
+            epochs=config.training.epochs,
+            validation_data=ds_val,
+            # callbacks=[MlFlowCallback()],
+        )
+
+        # mlflow.keras.log_model(model, "models")
+
+    # logger.info("Training done, saving model")
+    # model.save(repo_path / Path("dvc_saved_models") / "model.h5")
 
 
 if __name__ == "__main__":
-    data_path = "datas/prepared_datas/train.csv"
-    dataset = create_train_dataset(data_path)
-    model = get_resnet()
-    model.compile(
-        loss=tf.keras.losses.CategoricalCrossentropy(),
-        optimizer="adam",
-        metrics=["acc"],
-    )
-
-    model.fit(dataset, epochs=10)
+    train()

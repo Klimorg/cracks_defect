@@ -1,0 +1,1 @@
+{'augment': True, 'batch_size': 16, 'repetitions': 1, 'prefetch': 1}

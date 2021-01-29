@@ -1,0 +1,8 @@
+# @package _group_
+class_name: model.wide_resnet.get_cnn
+name: "Wide ResNet"
+params:
+  n_classes: ${datas.n_classes}
+  img_shape: ${datas.img_shape}
+  repets: 3
+  width_factor: 3

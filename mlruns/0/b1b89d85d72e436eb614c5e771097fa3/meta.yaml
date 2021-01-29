@@ -1,0 +1,15 @@
+artifact_uri: file:///home/vorph/work/cracks_defect/mlruns/0/b1b89d85d72e436eb614c5e771097fa3/artifacts
+end_time: 1610987506350
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: b1b89d85d72e436eb614c5e771097fa3
+run_uuid: b1b89d85d72e436eb614c5e771097fa3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1610987469873
+status: 3
+tags: []
+user_id: vorph

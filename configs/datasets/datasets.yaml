@@ -1,0 +1,11 @@
+# @package _group_
+prepared_datas:
+  train: "datas/prepared_datas/train.csv"
+  val: "datas/prepared_datas/val.csv"
+  test: "datas/prepared_datas/test.csv"
+
+params:
+  augment: True
+  batch_size: 32
+  repetitions: 1
+  prefetch: 1

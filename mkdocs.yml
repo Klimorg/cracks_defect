@@ -18,7 +18,7 @@ plugins:
         python:
           setup_commands:
             - import sys
-            - sys.path.append("back")
+            - sys.path.append("src")
           rendering:
             show_source: true
 

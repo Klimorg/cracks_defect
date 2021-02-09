@@ -1,12 +1,13 @@
-from pathlib import Path
-from typing import Any, Dict
-from omegaconf import DictConfig, OmegaConf
+import collections
+import importlib
 import os
 import random
-import tensorflow as tf
+from pathlib import Path
+from typing import Any, Dict
+
 import numpy as np
-import importlib
-import collections
+import tensorflow as tf
+from omegaconf import DictConfig, OmegaConf
 
 # https://github.com/Erlemar/pytorch_tempest/blob/
 # master/src/utils/technical_utils.py
@@ -84,7 +85,7 @@ def set_seed(random_seed: int) -> None:
     os.environ["TF_DETERMINISTIC_OPS"] = "1"
 
 
-def flatten_omegaconf(d, sep="_"):
+def flatten_omegaconf(d: DictConfig, sep: str = "_") -> Dict:
     d = OmegaConf.to_container(d)
 
     obj = collections.OrderedDict()
@@ -103,7 +104,16 @@ def flatten_omegaconf(d, sep="_"):
             obj[parent_key] = t
 
     recurse(d)
-    obj = {k: v for k, v in obj.items() if isinstance(v, (int, float))}
-    # obj = {k: v for k, v in obj.items()}
+    obj_txt = {
+        k: v
+        for k, v in obj.items()
+        if isinstance(v, str) and not v.startswith("$")
+    }
+    obj_value = {k: v for k, v in obj.items() if isinstance(v, (int, float))}
 
-    return obj
+    obj_txt.update(obj_value)
+
+    res = collections.OrderedDict(sorted(obj_txt.items()))
+    res = {k: v for k, v in res.items()}
+
+    return res

@@ -3,8 +3,8 @@ import importlib
 import os
 import random
 from pathlib import Path
-from typing import Any, Dict
-
+from typing import Any, Dict, List
+import mlflow
 import numpy as np
 import tensorflow as tf
 from omegaconf import DictConfig, OmegaConf
@@ -117,3 +117,32 @@ def flatten_omegaconf(d: DictConfig, sep: str = "_") -> Dict:
     res = {k: v for k, v in res.items()}
 
     return res
+
+
+# https://github.com/GokuMohandas/applied-ml/blob/main/tagifai/utils.py
+def get_sorted_runs(
+    experiment_name: str, order_by: List, top_k: int = 10
+) -> List[Dict]:
+    """Get sorted list of runs from Experiment `experiment_name`.
+    Usage:
+    ```python
+    runs = get_sorted_runs(experiment_name="best", order_by=["metrics.f1 DESC"])
+    ```
+    Args:
+        experiment_name (str): Name of the experiment to fetch runs from.
+        order_by (List): List specification for how to order the runs.
+    Returns:
+        List[Dict]: List of ordered runs with their respective info.
+    """
+    # client = mlflow.tracking.MlflowClient()
+    experiment_id = mlflow.get_experiment_by_name(
+        experiment_name
+    ).experiment_id
+    runs_df = mlflow.search_runs(
+        experiment_ids=experiment_id, order_by=order_by,
+    )[:top_k]
+
+    # Convert DataFrame to List[Dict]
+    # runs = runs_df.to_dict("records")
+
+    return runs_df

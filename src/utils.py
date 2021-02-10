@@ -1,18 +1,19 @@
 import collections
+from collections import OrderedDict
 import importlib
 import os
 import random
 from pathlib import Path
 from typing import Any, Dict, List
-import mlflow
+import mlflow  # type: ignore
 import numpy as np
-import tensorflow as tf
+import tensorflow as tf  # type: ignore
+import pandas as pd
 from omegaconf import DictConfig, OmegaConf
+
 
 # https://github.com/Erlemar/pytorch_tempest/blob/
 # master/src/utils/technical_utils.py
-
-
 def config_to_hydra_dict(cfg: DictConfig) -> Dict:
     """
     Convert config into dict with lists of values, where key is full name of
@@ -31,21 +32,22 @@ def config_to_hydra_dict(cfg: DictConfig) -> Dict:
     return experiment_dict
 
 
-def load_object(object_path: Path, params: Dict) -> Any:
+# def load_object(object_path: Path, params: Dict) -> Any:
 
-    # for hp in hp_dict.keys():
-    #     optimizer.__setattr__(hp, hp_dict.get(hp))
+#     # for hp in hp_dict.keys():
+#     #     optimizer.__setattr__(hp, hp_dict.get(hp))
 
-    p, m = object_path.rsplit(".", 1)
+#     p, m = object_path.rsplit(".", 1)
 
-    mod = importlib.import_module(p)
-    func = getattr(mod, m)
+#     mod = importlib.import_module(p)
+#     func = getattr(mod, m)
 
-    object = func(**params)
+#     object = func(**params)
 
-    return object
+#     return object
 
-
+# https://github.com/Erlemar/pytorch_tempest/blob/
+# master/src/utils/technical_utils.py
 def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
     """
     Extract an object from a given path.
@@ -85,10 +87,12 @@ def set_seed(random_seed: int) -> None:
     os.environ["TF_DETERMINISTIC_OPS"] = "1"
 
 
-def flatten_omegaconf(d: DictConfig, sep: str = "_") -> Dict:
+# https://github.com/Erlemar/pytorch_tempest/blob/
+# master/src/utils/technical_utils.py
+def flatten_omegaconf(d: Any, sep: str = "_") -> Dict[Any, str]:
     d = OmegaConf.to_container(d)
 
-    obj = collections.OrderedDict()
+    obj = OrderedDict()
 
     def recurse(t, parent_key=""):
 
@@ -104,6 +108,7 @@ def flatten_omegaconf(d: DictConfig, sep: str = "_") -> Dict:
             obj[parent_key] = t
 
     recurse(d)
+
     obj_txt = {
         k: v
         for k, v in obj.items()
@@ -113,7 +118,7 @@ def flatten_omegaconf(d: DictConfig, sep: str = "_") -> Dict:
 
     obj_txt.update(obj_value)
 
-    res = collections.OrderedDict(sorted(obj_txt.items()))
+    res = dict(sorted(obj_txt.items()))
     res = {k: v for k, v in res.items()}
 
     return res
@@ -122,17 +127,17 @@ def flatten_omegaconf(d: DictConfig, sep: str = "_") -> Dict:
 # https://github.com/GokuMohandas/applied-ml/blob/main/tagifai/utils.py
 def get_sorted_runs(
     experiment_name: str, order_by: List, top_k: int = 10
-) -> List[Dict]:
+) -> pd.DataFrame:
     """Get sorted list of runs from Experiment `experiment_name`.
     Usage:
     ```python
-    runs = get_sorted_runs(experiment_name="best", order_by=["metrics.f1 DESC"])
+    runs = get_sorted_runs(experiment_name="best", order_by=["metrics.val_loss ASC"])
     ```
     Args:
         experiment_name (str): Name of the experiment to fetch runs from.
         order_by (List): List specification for how to order the runs.
     Returns:
-        List[Dict]: List of ordered runs with their respective info.
+        pd.DataFrame: Dataframe of ordered runs with their respective info.
     """
     # client = mlflow.tracking.MlflowClient()
     experiment_id = mlflow.get_experiment_by_name(

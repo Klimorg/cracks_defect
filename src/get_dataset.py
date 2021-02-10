@@ -3,12 +3,12 @@ from collections import Counter
 from pathlib import Path
 from typing import List, Tuple
 
-import pandas as pd
 import typer
 import yaml
 from loguru import logger
 from sklearn.model_selection import train_test_split  # type: ignore
-from utils import set_seed
+from utils import set_seed  # type: ignore
+import csv
 
 params = yaml.safe_load(open("configs/params.yaml"))["prepare"]
 
@@ -62,7 +62,9 @@ def get_files_and_labels(
 
 
 @logger.catch()
-def save_as_csv(filenames: List[Path], labels: List[str], destination: Path):
+def save_as_csv(
+    filenames: List[Path], labels: List[str], destination: Path
+) -> None:
     """Sauvegarde sous la forme d'un csv une dataframe pandas où la première
     colonne correspond aux adresses des images et la seconde aux labels
     correspondants.
@@ -75,13 +77,21 @@ def save_as_csv(filenames: List[Path], labels: List[str], destination: Path):
     logger.info(
         f"Saving dataset in {destination} with labels ratio {Counter(labels)}"
     )
-    data_frame = pd.DataFrame({"filename": filenames, "label": labels})
-    data_frame.to_csv(destination)
+    header = ["filename", "label"]
+    with open(destination, "w", newline="") as f:
+        writer = csv.writer(f, delimiter=",")
+        writer.writerow(header)
+        writer.writerows(zip(filenames, labels))
+
+    # data_frame = pd.DataFrame({"filename": filenames, "label": labels})
+    # data_frame.to_csv(destination)
 
 
 @logger.catch()
 @app.command()
-def main(repo_path: Path = Path(__file__).parent.parent, ratio: float = ratio):
+def main(
+    repo_path: Path = Path(__file__).parent.parent, ratio: float = ratio
+) -> None:
     """Fonction principale.
 
     - Liste toutes les images via `get_files_and_labels` dans le dossier racine

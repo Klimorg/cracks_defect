@@ -9,13 +9,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from featurize import featurize  # type: ignore
 
-from tensorflow.keras.callbacks import Callback  # type: ignore
-from utils import config_to_hydra_dict, set_seed, load_obj  # type: ignore
-
-
-class MlFlowCallback(Callback):
-    def on_epoch_end(self, epoch, logs=None):
-        mlflow.log_metrics(logs, step=epoch)
+from utils import config_to_hydra_dict, set_seed, load_obj, flatten_omegaconf  # type: ignore
 
 
 @logger.catch()
@@ -47,6 +41,9 @@ def train(config: DictConfig) -> tf.keras.Model:
     Returns:
         tf.keras.Model: [description]
     """
+    logger.add(f"logs_train_{config.log.timestamp}.log")
+
+    logger.info(f"Training started at {config.log.timestamp}")
     conf_dict = config_to_hydra_dict(config)
 
     repo_path = hydra.utils.get_original_cwd()
@@ -68,7 +65,7 @@ def train(config: DictConfig) -> tf.keras.Model:
 
         logger.info(f"Run infos : {run.info}")
         mlflow.tensorflow.autolog(every_n_iter=1)
-        mlflow.log_params(conf_dict)
+        mlflow.log_params(flatten_omegaconf(config))
 
         ft = featurize(
             n_classes=config.datas.n_classes,
@@ -125,10 +122,7 @@ def train(config: DictConfig) -> tf.keras.Model:
 
         logger.info("Start training")
         model.fit(
-            ds,
-            epochs=config.training.epochs,
-            validation_data=ds_val,
-            # callbacks=[MlFlowCallback()],
+            ds, epochs=config.training.epochs, validation_data=ds_val,
         )
 
         # mlflow.keras.log_model(model, "models")

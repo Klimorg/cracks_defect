@@ -14,7 +14,12 @@ run_docker:
 	#sudo docker run --gpus all -it --rm -v $(PWD):/work/cracks --user $(id -u):$(id -g) docker_cracks bash
 	#docker run --gpus all -it --rm -P --mount type=bind,source=$(PWD),target=/home/vorph/work/cracks_defect --user $(id -u):$(id -g) docker_cracks bash
 	#sudo docker run --gpus all -it --rm -P --mount type=bind,source=$(PWD),target=/home/vorph/work/cracks_defect --user $(id -u):$(id -g) docker_cracks bash
-	docker run --gpus all -it --rm -P --mount type=bind,source=$(PWD),target=/home/vorph/work/cracks_defect --user $(id -u):$(id -g) docker_cracks bash
+	docker run --gpus all -it --rm -P --mount type=bind,source=$(PWD),target=/home/vorph/work/cracks_defect --user $$(id -u):$$(id -g) docker_cracks bash
+
+# https://stackoverflow.com/questions/43133670/getting-docker-container-id-in-makefile-to-use-in-another-command
+# I ran into the same problem and realised that makefiles take output from shell variables with the use of $$.
+
+
 
 docs:
 	mkdocs serve

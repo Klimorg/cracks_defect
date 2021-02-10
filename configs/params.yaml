@@ -15,6 +15,8 @@ mlflow:
   experiment_name: version_hydra_complète
   run_name: ${cnn.name}_${datas.n_classes}_${datas.img_shape}_${datasets.params.batch_size}_${training.lr}_${now:%Y-%m-%d_%H-%M-%S}
 
+log:
+  timestamp: ${now:%Y-%m-%d_%H-%M-%S}
 # hydra:
 #   run:
 #     dir: outputs/${now:%Y-%m-%d_%H-%M-%S} #_${hydra.job.override_dirname}

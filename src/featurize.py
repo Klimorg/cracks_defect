@@ -53,18 +53,15 @@ class featurize:
             List[int]: [description]
         """
         label_list = data_frame[column_name].tolist()
-        classes = list(set(label_list))
+        classes = sorted(list(set(label_list)))
         logger.info(f"Found following labels {classes}")
-
-        # codec = LabelEncoder()
-        # codec.fit(classes)
-        # label_list = [codec.transform([label])[0] for label in label_list]
 
         labels = np.unique(label_list, return_inverse=True)[1]
         dic = dict(zip(label_list, labels))
         logger.info(f"Dictionnary creation {dic}")
-        label_list = np.vectorize(dic.get)(label_list)
-        # logger.info(f"Found following label_list {label_list}")
+        vectorize_get = np.vectorize(dic.get)
+        label_list = vectorize_get(label_list)
+
         return label_list
 
     def load_data(self, data_path: str) -> Tuple[List[str], List[int]]:

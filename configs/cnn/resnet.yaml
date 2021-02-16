@@ -4,4 +4,4 @@ name: "ResNetV2"
 params:
   n_classes: ${datas.n_classes}
   img_shape: ${datas.img_shape}
-  repets: 2
+  repets: 5

@@ -117,12 +117,16 @@ def train(config: DictConfig) -> tf.keras.Model:
         metric = metric()
 
         model.compile(
-            optimizer=optimizer, loss=loss, metrics=[metric],
+            optimizer=optimizer,
+            loss=loss,
+            metrics=[metric],
         )
 
         logger.info("Start training")
         model.fit(
-            ds, epochs=config.training.epochs, validation_data=ds_val,
+            ds,
+            epochs=config.training.epochs,
+            validation_data=ds_val,
         )
 
         # mlflow.keras.log_model(model, "models")

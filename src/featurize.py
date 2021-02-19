@@ -2,18 +2,18 @@ from typing import Any, List, Tuple
 
 import numpy as np
 import pandas as pd
-import tensorflow as tf  # type: ignore
+import tensorflow as tf
 from loguru import logger
 
 
-class featurize:
+class Featurize:
     def __init__(
         self, n_classes: int, img_shape: Tuple[int, int, int], random_seed: int
     ) -> None:
         self.n_classes = n_classes
         self.img_shape = img_shape
         self.random_seed = random_seed
-        self.AUTOTUNE = tf.data.experimental.AUTOTUNE
+        self.AUTOTUNE = 4  # tf.data.experimental.AUTOTUNE
 
     def load_images(
         self, data_frame: pd.DataFrame, column_name: str

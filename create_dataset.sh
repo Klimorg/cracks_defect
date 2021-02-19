@@ -19,6 +19,7 @@ create_dataset(){
             done
         fi
     done
+    echo "Done."
 }
 
 create_dataset $1

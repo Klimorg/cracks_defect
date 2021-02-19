@@ -31,16 +31,15 @@
   "python.linting.flake8Path": "flake8",
   "python.linting.ignorePatterns": [
       ".vscode/*.py",
-      "/site-packages//*.py",
-      ".venv//*.py",
-      ".pytest_cache//*.py"
+      "**/site-packages/**/*.py",
+      ".venv/**/*.py",
+      "**.pytest_cache/**/*.py"
     ],
   "python.formatting.provider": "black",
   "python.linting.mypyEnabled": true,
   "python.linting.mypyPath": "mypy",
   "python.testing.pytestEnabled" : true,
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
-  "editor.formatOnType": true,
-  "python.pythonPath": "/home/vorph/miniconda3/envs/defect/bin/python",
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
   }

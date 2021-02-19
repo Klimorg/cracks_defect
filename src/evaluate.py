@@ -1,10 +1,11 @@
-from tensorflow.keras.models import load_model
-from featurize import featurize  # type: ignore
-import hydra
-from omegaconf import DictConfig
-from loguru import logger
 from pathlib import Path
+
+import hydra
 import mlflow
+from featurize import featurize  # type: ignore
+from loguru import logger
+from omegaconf import DictConfig
+from tensorflow.keras.models import load_model
 from utils import set_seed
 
 

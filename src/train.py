@@ -1,15 +1,13 @@
 from pathlib import Path
 
 import hydra
-import mlflow  # type: ignore
-import mlflow.tensorflow  # type: ignore
-import tensorflow as tf  # type: ignore
+import mlflow
+import tensorflow as tf
+from featurize import Featurize
 from loguru import logger
+from mlflow import tensorflow as mltensorflow
 from omegaconf import DictConfig, OmegaConf
-
-from featurize import featurize  # type: ignore
-
-from utils import config_to_hydra_dict, set_seed, load_obj, flatten_omegaconf  # type: ignore
+from utils import config_to_hydra_dict, flatten_omegaconf, load_obj, set_seed
 
 
 @logger.catch()
@@ -64,10 +62,10 @@ def train(config: DictConfig) -> tf.keras.Model:
     with mlflow.start_run(run_name=config.mlflow.run_name) as run:
 
         logger.info(f"Run infos : {run.info}")
-        mlflow.tensorflow.autolog(every_n_iter=1)
+        mltensorflow.autolog(every_n_iter=1)
         mlflow.log_params(flatten_omegaconf(config))
 
-        ft = featurize(
+        ft = Featurize(
             n_classes=config.datas.n_classes,
             img_shape=config.datas.img_shape,
             random_seed=config.prepare.seed,

@@ -1,14 +1,15 @@
 import collections
-from collections import OrderedDict
 import importlib
 import os
 import random
+from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List
+
 import mlflow  # type: ignore
 import numpy as np
-import tensorflow as tf  # type: ignore
 import pandas as pd
+import tensorflow as tf  # type: ignore
 from omegaconf import DictConfig, OmegaConf
 
 
@@ -144,7 +145,8 @@ def get_sorted_runs(
         experiment_name
     ).experiment_id
     runs_df = mlflow.search_runs(
-        experiment_ids=experiment_id, order_by=order_by,
+        experiment_ids=experiment_id,
+        order_by=order_by,
     )[:top_k]
 
     # Convert DataFrame to List[Dict]

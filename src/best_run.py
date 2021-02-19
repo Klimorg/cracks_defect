@@ -1,6 +1,5 @@
-from utils import get_sorted_runs
 import yaml
-
+from utils import get_sorted_runs
 
 params = yaml.safe_load(open("configs/params.yaml"))["mlflow"]
 experiment_name = params["experiment_name"]
@@ -15,7 +14,8 @@ def evaluate():
     # )
 
     all_runs = get_sorted_runs(
-        experiment_name=experiment_name, order_by=["metrics.val_loss ASC"],
+        experiment_name=experiment_name,
+        order_by=["metrics.val_loss ASC"],
     )
 
     print(

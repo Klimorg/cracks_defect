@@ -1,6 +1,5 @@
 import hydra
 from omegaconf import DictConfig
-
 from utils import config_to_hydra_dict, flatten_omegaconf
 
 

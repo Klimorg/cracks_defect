@@ -19,6 +19,7 @@ plugins:
           setup_commands:
             - import sys
             - sys.path.append("src")
+            - sys.path.append("tests")
           rendering:
             show_source: true
 
@@ -28,6 +29,7 @@ nav:
   - Transformation des données: featurize.md
   - Architecture ResNet: resnet.md
   - Entraînement: train.md
+  - test : test_featurize.md
 
 
 markdown_extensions:

@@ -1,10 +1,16 @@
 # @package _group_
-prepared_datas:
-  train: "datas/prepared_datas/train.csv"
-  val: "datas/prepared_datas/val.csv"
-  test: "datas/prepared_datas/test.csv"
+raw_datas:
+  n_classes: 2
+
+raw_dataset: "datas/raw_dataset"
+
+prepared_dataset:
+  train: "datas/prepared_dataset/train.csv"
+  val: "datas/prepared_dataset/val.csv"
+  test: "datas/prepared_dataset/test.csv"
 
 params:
+  img_shape: [128,128,3]
   augment: True
   batch_size: 32
   repetitions: 1

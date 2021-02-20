@@ -13,6 +13,9 @@ plugins:
   - search:
       lang: fr
   - mkdocstrings:
+      watch:
+        - src
+        - tests
       default_handler: python
       handlers:
         python:
@@ -25,11 +28,14 @@ plugins:
 
 nav:
   - Acceuil: index.md
-  - Initialisation: get_dataset.md
-  - Transformation des données: featurize.md
-  - Architecture ResNet: resnet.md
-  - Entraînement: train.md
-  - test : test_featurize.md
+  - Création des datasets:
+    - Initialisation: get_dataset.md
+    - Transformation des données: tensorize.md
+  - Modèles CNN:
+    - Architecture ResNet: resnet.md
+    - Entraînement: train.md
+  - Tests unitaires:
+    - featurize: test_tensorize.md
 
 
 markdown_extensions:

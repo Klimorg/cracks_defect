@@ -3,17 +3,30 @@ from pathlib import Path
 import hydra
 import mlflow
 import tensorflow as tf
-from featurize import Featurize
 from loguru import logger
 from mlflow import tensorflow as mltensorflow
 from omegaconf import DictConfig, OmegaConf
+from tensorize import Tensorize
 from utils import config_to_hydra_dict, flatten_omegaconf, load_obj, set_seed
+
+"""
+https://stackoverflow.com/questions/59635474/
+whats-difference-between-using-metrics-acc-and-tf-keras-metrics-accuracy
+
+I'll just add that as of tf v2.2 in training.py the docs say
+"When you pass the strings 'accuracy' or 'acc', we convert this to
+one of tf.keras.metrics.BinaryAccuracy,
+tf.keras.metrics.CategoricalAccuracy,
+tf.keras.metrics.SparseCategoricalAccuracy based on the loss function
+used and the model output shape. We do a similar conversion
+for the strings 'crossentropy' and 'ce' as well."
+"""
 
 
 @logger.catch()
 @hydra.main(config_path="../configs/", config_name="params.yaml")
 def train(config: DictConfig) -> tf.keras.Model:
-    """[summary]
+    """[summary].
 
     Lorsque que l'on travaille avec Hydra, toute la logique de la fonction doit
     être contenu dans `main()`, on ne peut pas faire appel à des fonctions
@@ -46,9 +59,7 @@ def train(config: DictConfig) -> tf.keras.Model:
 
     repo_path = hydra.utils.get_original_cwd()
 
-    mlflow.set_tracking_uri(
-        "file://" + hydra.utils.get_original_cwd() + "/mlruns"
-    )
+    mlflow.set_tracking_uri("file://" + hydra.utils.get_original_cwd() + "/mlruns")
     mlflow.set_experiment(config.mlflow.experiment_name)
 
     logger.info(f"{OmegaConf.to_yaml(config)}")
@@ -65,13 +76,13 @@ def train(config: DictConfig) -> tf.keras.Model:
         mltensorflow.autolog(every_n_iter=1)
         mlflow.log_params(flatten_omegaconf(config))
 
-        ft = Featurize(
+        ts = Tensorize(
             n_classes=config.datas.n_classes,
-            img_shape=config.datas.img_shape,
+            img_shape=config.datasets.params.img_shape,
             random_seed=config.prepare.seed,
         )
 
-        ds = ft.create_dataset(
+        ds = ts.create_dataset(
             Path(repo_path) / config.datasets.prepared_datas.train,
             config.datasets.params.batch_size,
             config.datasets.params.repetitions,
@@ -79,7 +90,7 @@ def train(config: DictConfig) -> tf.keras.Model:
             config.datasets.params.augment,
         )
 
-        ds_val = ft.create_dataset(
+        ds_val = ts.create_dataset(
             Path(repo_path) / config.datasets.prepared_datas.val,
             config.datasets.params.batch_size,
             config.datasets.params.repetitions,
@@ -98,19 +109,6 @@ def train(config: DictConfig) -> tf.keras.Model:
         loss = load_obj(config.losses.class_name)
         loss = loss(**conf_dict["losses.params"])
 
-        """
-        https://stackoverflow.com/questions/59635474/
-        whats-difference-between-using-metrics-acc-and-tf-keras-metrics-accuracy
-
-        I'll just add that as of tf v2.2 in training.py the docs say
-        "When you pass the strings 'accuracy' or 'acc', we convert this to
-        one of tf.keras.metrics.BinaryAccuracy,
-        tf.keras.metrics.CategoricalAccuracy,
-        tf.keras.metrics.SparseCategoricalAccuracy based on the loss function
-        used and the model output shape. We do a similar conversion
-        for the strings 'crossentropy' and 'ce' as well."
-        """
-
         metric = load_obj(config.metrics.class_name)
         metric = metric()
 
@@ -126,11 +124,6 @@ def train(config: DictConfig) -> tf.keras.Model:
             epochs=config.training.epochs,
             validation_data=ds_val,
         )
-
-        # mlflow.keras.log_model(model, "models")
-
-    # logger.info("Training done, saving model")
-    # model.save(repo_path / Path("dvc_saved_models") / "model.h5")
 
 
 if __name__ == "__main__":

@@ -15,9 +15,7 @@ def eval(config: DictConfig) -> None:
     set_seed(config.prepare.seed)
     repo_path = hydra.utils.get_original_cwd()
 
-    mlflow.set_tracking_uri(
-        "file://" + hydra.utils.get_original_cwd() + "/mlruns"
-    )
+    mlflow.set_tracking_uri("file://" + hydra.utils.get_original_cwd() + "/mlruns")
 
     logger.info(f"Root path of the folder : {repo_path}")
     logger.info(f"MLFlow uri : {mlflow.get_tracking_uri()}")

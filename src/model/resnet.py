@@ -74,9 +74,7 @@ def resnet_block(tensor: tf.Tensor, filters: int) -> tf.Tensor:
     return x
 
 
-def proj_block(
-    tensor: tf.Tensor, filters: int, strides: Tuple[int, int]
-) -> tf.Tensor:
+def proj_block(tensor: tf.Tensor, filters: int, strides: Tuple[int, int]) -> tf.Tensor:
     """[summary]
 
     Args:
@@ -104,12 +102,8 @@ def proj_block(
     )(out1)
 
     # main stream
-    out3 = bn_relu_conv(
-        out1, inner_filters, kernel_size=(1, 1), strides=strides
-    )
-    out3 = bn_relu_conv(
-        out3, inner_filters, kernel_size=(3, 3), strides=(1, 1)
-    )
+    out3 = bn_relu_conv(out1, inner_filters, kernel_size=(1, 1), strides=strides)
+    out3 = bn_relu_conv(out3, inner_filters, kernel_size=(3, 3), strides=(1, 1))
     out3 = bn_relu_conv(out3, filters, kernel_size=(1, 1), strides=(1, 1))
 
     out = Add()([out2, out3])

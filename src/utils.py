@@ -66,17 +66,13 @@ def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
     """
     obj_path_list = obj_path.rsplit(".", 1)
     # print(f"{obj_path_list}")
-    obj_path = (
-        obj_path_list.pop(0) if len(obj_path_list) > 1 else default_obj_path
-    )
+    obj_path = obj_path_list.pop(0) if len(obj_path_list) > 1 else default_obj_path
     # print(f"{obj_path}")
     obj_name = obj_path_list[0]
     # print(f"{obj_name}")
     module_obj = importlib.import_module(obj_path)
     if not hasattr(module_obj, obj_name):
-        raise AttributeError(
-            f"Object `{obj_name}` cannot be loaded from `{obj_path}`."
-        )
+        raise AttributeError(f"Object `{obj_name}` cannot be loaded from `{obj_path}`.")
     return getattr(module_obj, obj_name)
 
 
@@ -99,9 +95,7 @@ def flatten_omegaconf(d: Any, sep: str = "_") -> Dict[Any, str]:
 
         if isinstance(t, list):
             for i, _ in enumerate(t):
-                recurse(
-                    t[i], parent_key + sep + str(i) if parent_key else str(i)
-                )
+                recurse(t[i], parent_key + sep + str(i) if parent_key else str(i))
         elif isinstance(t, dict):
             for k, v in t.items():
                 recurse(v, parent_key + sep + k if parent_key else k)
@@ -111,9 +105,7 @@ def flatten_omegaconf(d: Any, sep: str = "_") -> Dict[Any, str]:
     recurse(d)
 
     obj_txt = {
-        k: v
-        for k, v in obj.items()
-        if isinstance(v, str) and not v.startswith("$")
+        k: v for k, v in obj.items() if isinstance(v, str) and not v.startswith("$")
     }
     obj_value = {k: v for k, v in obj.items() if isinstance(v, (int, float))}
 
@@ -141,9 +133,7 @@ def get_sorted_runs(
         pd.DataFrame: Dataframe of ordered runs with their respective info.
     """
     # client = mlflow.tracking.MlflowClient()
-    experiment_id = mlflow.get_experiment_by_name(
-        experiment_name
-    ).experiment_id
+    experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
     runs_df = mlflow.search_runs(
         experiment_ids=experiment_id,
         order_by=order_by,

@@ -2,7 +2,7 @@
   // config générale
     "editor.suggestSelection": "first",
     "editor.rulers": [
-      79,
+      88,
       120
     ],
     "workbench.colorTheme": "One Dark Pro",
@@ -16,9 +16,6 @@
     "terminal.integrated.cursorStyle": "line",
     "terminal.integrated.cursorWidth": 2,
     "git.autofetch": true,
-    "python.formatting.blackArgs": [
-      "--line-length=79"
-    ],
     "trailing-spaces.trimOnSave": true,
   // config python
   "python.analysis.extraPaths": [
@@ -36,6 +33,9 @@
       "**.pytest_cache/**/*.py"
     ],
   "python.formatting.provider": "black",
+  "python.formatting.blackArgs": [
+    "--line-length=88"
+  ],
   "python.linting.mypyEnabled": true,
   "python.linting.mypyPath": "mypy",
   "python.testing.pytestEnabled" : true,

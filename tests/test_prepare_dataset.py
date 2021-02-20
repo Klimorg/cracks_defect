@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from src.prepare_dataset import get_files_paths
+from src.prepare_dataset import get_files_paths, get_images_paths_and_labels
 
 
 @pytest.fixture
@@ -30,3 +30,21 @@ def test_get_files_paths(root_directory):
 
     assert isinstance(subdirs, list)
     assert len(subdirs) == 2
+
+
+def test_get_images_paths_and_labels(root_directory):
+    """[summary].
+
+    Args:
+        root_directory ([type]): [description]
+    """
+    files_paths, subdirs = get_files_paths(root_directory)
+
+    images, labels = get_images_paths_and_labels(files_paths, subdirs)
+
+    assert len(images) == 20
+    assert len(labels) == 20
+
+    for idx in range(10):
+        assert images[idx].parent.name == "Negative"
+        assert images[10 + idx].parent.name == "Positive"

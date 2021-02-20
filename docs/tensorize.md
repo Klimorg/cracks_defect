@@ -1,5 +1,5 @@
 # Pipeline pour la transformation des données
 
-::: src.featurize
+::: src.tensorize
     rendering:
         show_source: true

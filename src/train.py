@@ -5,28 +5,15 @@ import mlflow
 import tensorflow as tf
 from loguru import logger
 from mlflow import tensorflow as mltensorflow
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 from tensorize import Tensorize
-from utils import config_to_hydra_dict, flatten_omegaconf, load_obj, set_seed
-
-"""
-https://stackoverflow.com/questions/59635474/
-whats-difference-between-using-metrics-acc-and-tf-keras-metrics-accuracy
-
-I'll just add that as of tf v2.2 in training.py the docs say
-"When you pass the strings 'accuracy' or 'acc', we convert this to
-one of tf.keras.metrics.BinaryAccuracy,
-tf.keras.metrics.CategoricalAccuracy,
-tf.keras.metrics.SparseCategoricalAccuracy based on the loss function
-used and the model output shape. We do a similar conversion
-for the strings 'crossentropy' and 'ce' as well."
-"""
+from utils import flatten_omegaconf, load_obj, set_log_infos, set_seed
 
 
 @logger.catch()
 @hydra.main(config_path="../configs/", config_name="params.yaml")
-def train(config: DictConfig) -> tf.keras.Model:
-    """[summary].
+def train(config: DictConfig):
+    """Train loop of the classification model.
 
     Lorsque que l'on travaille avec Hydra, toute la logique de la fonction doit
     être contenu dans `main()`, on ne peut pas faire appel à des fonctions
@@ -46,23 +33,30 @@ def train(config: DictConfig) -> tf.keras.Model:
     [Modifier de lr](https://stackoverflow.com/questions/
     59737875/keras-change-learning-rate)
 
+    https://stackoverflow.com/questions/59635474/
+    whats-difference-between-using-metrics-acc-and-tf-keras-metrics-accuracy
+
+    I'll just add that as of tf v2.2 in training.py the docs say
+    "When you pass the strings 'accuracy' or 'acc', we convert this to
+    one of tf.keras.metrics.BinaryAccuracy,
+    tf.keras.metrics.CategoricalAccuracy,
+    tf.keras.metrics.SparseCategoricalAccuracy based on the loss function
+    used and the model output shape. We do a similar conversion
+    for the strings 'crossentropy' and 'ce' as well."
+
     Args:
         config (DictConfig): [description]
-
-    Returns:
-        tf.keras.Model: [description]
     """
-    logger.add(f"logs_train_{config.log.timestamp}.log")
+    conf_dict, repo_path = set_log_infos(config)
 
-    logger.info(f"Training started at {config.log.timestamp}")
-    conf_dict = config_to_hydra_dict(config)
+    logger.info("Setting training policy.")
+    policy = tf.keras.mixed_precision.experimental.Policy("mixed_float16")
+    tf.keras.mixed_precision.experimental.set_policy(policy)
+    logger.info(f"Compute dtype : {policy.compute_dtype}")
+    logger.info(f"Variable dtype : {policy.variable_dtype}")
 
-    repo_path = hydra.utils.get_original_cwd()
-
-    mlflow.set_tracking_uri("file://" + hydra.utils.get_original_cwd() + "/mlruns")
+    mlflow.set_tracking_uri(f"file://{repo_path}/mlruns")
     mlflow.set_experiment(config.mlflow.experiment_name)
-
-    logger.info(f"{OmegaConf.to_yaml(config)}")
 
     set_seed(config.prepare.seed)
 
@@ -73,6 +67,7 @@ def train(config: DictConfig) -> tf.keras.Model:
     with mlflow.start_run(run_name=config.mlflow.run_name) as run:
 
         logger.info(f"Run infos : {run.info}")
+
         mltensorflow.autolog(every_n_iter=1)
         mlflow.log_params(flatten_omegaconf(config))
 
@@ -83,7 +78,7 @@ def train(config: DictConfig) -> tf.keras.Model:
         )
 
         ds = ts.create_dataset(
-            Path(repo_path) / config.datasets.prepared_datas.train,
+            Path(repo_path) / config.datasets.prepared_dataset.train,
             config.datasets.params.batch_size,
             config.datasets.params.repetitions,
             config.datasets.params.prefetch,
@@ -91,7 +86,7 @@ def train(config: DictConfig) -> tf.keras.Model:
         )
 
         ds_val = ts.create_dataset(
-            Path(repo_path) / config.datasets.prepared_datas.val,
+            Path(repo_path) / config.datasets.prepared_dataset.val,
             config.datasets.params.batch_size,
             config.datasets.params.repetitions,
             config.datasets.params.prefetch,

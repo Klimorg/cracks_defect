@@ -1,7 +1,12 @@
 from pathlib import Path
 
+import pandas as pd
 import pytest
-from src.prepare_dataset import get_files_paths, get_images_paths_and_labels
+from src.prepare_dataset import (
+    create_train_val_test_datasets,
+    get_files_paths,
+    get_images_paths_and_labels,
+)
 
 
 @pytest.fixture
@@ -14,7 +19,19 @@ def root_directory():
     return Path("tests/test_datas")
 
 
-def test_get_files_paths(root_directory):
+@pytest.fixture
+def df() -> pd.DataFrame:
+    """Returns a test dataframe.
+
+    Returns:
+        pd.DataFrame: Test dataframe with manually crafted rows to check
+        behavior during testing. Has 20 rows : 10 with 'Negative' elements
+        followed by 10 with 'Positive' elements.
+    """
+    return pd.read_csv("tests/test_datas/test_datas.csv")
+
+
+def test_get_files_paths(root_directory) -> None:
     """[summary].
 
     Args:
@@ -32,7 +49,7 @@ def test_get_files_paths(root_directory):
     assert len(subdirs) == 2
 
 
-def test_get_images_paths_and_labels(root_directory):
+def test_get_images_paths_and_labels(root_directory) -> None:
     """[summary].
 
     Args:
@@ -48,3 +65,21 @@ def test_get_images_paths_and_labels(root_directory):
     for idx in range(10):
         assert images[idx].parent.name == "Negative"
         assert images[10 + idx].parent.name == "Positive"
+
+
+def test_create_train_val_test_datasets(df) -> None:
+    """[summary].
+
+    Args:
+        df ([type]): [description]
+    """
+    raw_images = df["filename"]
+    raw_labels = df["label"]
+
+    datasets_components = create_train_val_test_datasets(raw_images, raw_labels)
+
+    assert len(datasets_components[0]) == len(datasets_components[1]) == 15
+    assert 2 <= len(datasets_components[2]) <= 3
+    assert 2 <= len(datasets_components[3]) <= 3
+    assert 2 <= len(datasets_components[4]) <= 3
+    assert 2 <= len(datasets_components[5]) <= 3

@@ -9,6 +9,8 @@ from omegaconf import DictConfig
 from tensorize import Tensorize
 from utils import flatten_omegaconf, load_obj, set_log_infos, set_seed
 
+# test hello world
+
 
 @logger.catch()
 @hydra.main(config_path="../configs/", config_name="params.yaml")
@@ -50,6 +52,7 @@ def train(config: DictConfig):
     conf_dict, repo_path = set_log_infos(config)
 
     logger.info("Setting training policy.")
+    logger.info("test depuis l'env de dev docker")
     policy = tf.keras.mixed_precision.experimental.Policy("mixed_float16")
     tf.keras.mixed_precision.experimental.set_policy(policy)
     logger.info(f"Compute dtype : {policy.compute_dtype}")

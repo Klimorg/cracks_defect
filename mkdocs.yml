@@ -29,13 +29,15 @@ plugins:
 nav:
   - Acceuil: index.md
   - Création des datasets:
-    - Initialisation: get_dataset.md
+    - Initialisation: prepare_dataset.md
     - Transformation des données: tensorize.md
   - Modèles CNN:
     - Architecture ResNet: resnet.md
-    - Entraînement: train.md
+  - Boucle d'entraînement: train.md
   - Tests unitaires:
-    - featurize: test_tensorize.md
+    - tensorize: test_tensorize.md
+    - prepare_dataset: test_prepare_dataset.md
+    - utils: test_utils.md
 
 
 markdown_extensions:

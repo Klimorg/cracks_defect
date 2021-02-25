@@ -2,13 +2,16 @@ rm_dataset:
 	bash sudo rm -r ./datas/raw_dataset
 
 small_dataset:
-	bash create_dataset.sh 150
+	bash shell/create_dataset.sh 150
 
 medium_dataset:
-	bash create_dataset.sh 300
+	bash shell/create_dataset.sh 300
 
 normal_dataset:
-	bash create_dataset.sh 5000
+	bash ./shell/create_dataset.sh 5000
+
+clean:
+	bash shell/clean_pycache.sh ../cracks_defect
 
 prepared_dataset:
 	python src/get_dataset.py

@@ -8,16 +8,21 @@
 	"dockerFile": "../Dockerfile",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
-		"terminal.integrated.shell.linux": null
+		"editor.rulers": [88,120],
+		"workbench.colorTheme": "One Dark Pro",
+		"workbench.colorCustomizations": {
+			"editorRuler.foreground": "#750917"
+		},
+		"terminal.integrated.shell.linux": "/bin/bash"
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-python.python",
-		"ms-azuretools.vscode-docker",
 		"eamodio.gitlens",
 		"esbenp.prettier-vscode",
-		"ms-python.vscode-pylance",
+		"ms-azuretools.vscode-docker",
 		"njpwerner.autodocstring",
+		"ms-python.vscode-pylance",
 		"mechatroner.rainbow-csv",
 		"shardulm94.trailing-spaces",
 		"visualstudioexptteam.vscodeintellicode",

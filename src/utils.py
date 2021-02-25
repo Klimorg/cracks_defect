@@ -103,8 +103,7 @@ def flatten_omegaconf(cfg: Any) -> Dict[Any, Any]:
 def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
     """Extract an object from a given path.
 
-    https://github.com/quantumblacklabs/kedro/blob/
-    9809bd7ca0556531fa4a2fc02d5b2dc26cf8fa97/kedro/utils.py
+    https://github.com/quantumblacklabs/kedro/blob/9809bd7ca0556531fa4a2fc02d5b2dc26cf8fa97/kedro/utils.py
 
 
     Args:

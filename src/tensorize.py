@@ -78,7 +78,7 @@ class Tensorize(object):
         classes = sorted(set(label_list))
         logger.info(f"Found following labels {classes}")
 
-        labels = np.unique(label_list, return_inverse=True)[1]  # type: ignore[call-overload]
+        labels = np.unique(label_list, return_inverse=True)[1]  # type: ignore
         dic = dict(zip(label_list, labels))  # type: Dict[str, int]
         logger.info(f"Dictionnary creation {dic}")
         vectorized_get = np.vectorize(dic.get)  # type: ignore[attr-defined]

@@ -34,38 +34,8 @@ def config_to_hydra_dict(cfg: DictConfig) -> Dict[str, str]:
     return experiment_dict
 
 
-def recurse(
-    datas: Union[List[Any], Dict[str, str]], parent_key="", sep: Optional[str] = "_"
-) -> Dict[str, str]:
-    """Recursively flatten a nested Dict into a simple one.
-
-    Only used in `flatten_omegaconf`.
-
-    Args:
-        datas (Union[List, Dict]): Parts of the nested dictionnary to flatten.
-        parent_key (str, optional): Parent key in a nested dictionnary, if necessaey.
-            Defaults to "".
-        sep (Optional[str], optional): Separator used between keys. Defaults to "_".
-
-    Returns:
-        A flattend dictionnary.
-    """
-    flattened_dict = {}
-
-    if isinstance(datas, list):
-        for idx, _ in enumerate(datas):
-            recurse(datas[idx], parent_key + sep + str(idx) if parent_key else str(idx))
-    elif isinstance(datas, dict):
-        for key, attributed_value in datas.items():
-            recurse(attributed_value, parent_key + sep + key if parent_key else key)
-    else:
-        flattened_dict[parent_key] = datas
-
-    return flattened_dict
-
-
 # https://github.com/Erlemar/pytorch_tempest/blob/master/src/utils/technical_utils.py
-def flatten_omegaconf(cfg: Any) -> Dict[Any, str]:
+def flatten_omegaconf(cfg: Any) -> Dict[Any, Any]:
     """Recursively flatten a nested Dict into a simple one.
 
     The difference between this function and `recurse` is that the dictionnary produced
@@ -82,7 +52,35 @@ def flatten_omegaconf(cfg: Any) -> Dict[Any, str]:
     """
     cfg = OmegaConf.to_container(cfg)
 
-    flattened_dict = recurse(cfg)
+    flattened_dict = {}
+
+    def recurse(
+        datas: Union[List[Any], Dict[str, str], str, None],
+        parent_key="",
+        sep: str = "_",
+    ):
+        """Recursively flatten a nested Dict into a simple one.
+
+        Only used in `flatten_omegaconf`.
+
+        Args:
+            datas (Union[List, Dict]): Parts of the nested dictionnary to flatten.
+            parent_key (str, optional): Parent key in a nested dictionnary, if
+                necessary. Defaults to "".
+            sep (str): Separator used between keys. Defaults to "_".
+        """
+        if isinstance(datas, list):
+            for idx, _ in enumerate(datas):
+                recurse(
+                    datas[idx], parent_key + sep + str(idx) if parent_key else str(idx)
+                )
+        elif isinstance(datas, dict):
+            for key, attributed_value in datas.items():
+                recurse(attributed_value, parent_key + sep + key if parent_key else key)
+        else:
+            flattened_dict[parent_key] = datas
+
+    recurse(cfg)
 
     obj_txt = {
         key: attributed_value
@@ -90,9 +88,9 @@ def flatten_omegaconf(cfg: Any) -> Dict[Any, str]:
         if isinstance(attributed_value, str) and not attributed_value.startswith("$")
     }
     obj_num = {
-        key: attributed_value
-        for key, attributed_value in flattened_dict.items()
-        if isinstance(attributed_value, (int, float))
+        key: attributed_num
+        for key, attributed_num in flattened_dict.items()
+        if isinstance(attributed_num, (int, float))  # type: ignore
     }
 
     obj_txt.update(obj_num)
@@ -102,24 +100,23 @@ def flatten_omegaconf(cfg: Any) -> Dict[Any, str]:
 
 
 # https://github.com/Erlemar/pytorch_tempest/blob/master/src/utils/technical_utils.py
-def load_obj(obj_path: str, default_obj_path: Optional[str] = "") -> Any:
-    """
-    Extract an object from a given path.
+def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
+    """Extract an object from a given path.
 
-    https://github.com/quantumblacklabs/kedro/blob/
-    9809bd7ca0556531fa4a2fc02d5b2dc26cf8fa97/kedro/utils.py
+    https://github.com/quantumblacklabs/kedro/blob/9809bd7ca0556531fa4a2fc02d5b2dc26cf8fa97/kedro/utils.py
+
 
     Args:
-        obj_path: Path to an object to be extracted, including the object
+        obj_path (str): Path to an object to be extracted, including the object
             name.
-        default_obj_path: Default object path.
-
-    Returns:
-        Extracted object.
+        default_obj_path (str): Default object path.. Defaults to "".
 
     Raises:
         AttributeError: When the object does not have the given named
         attribute.
+
+    Returns:
+        Extracted object.
     """
     obj_path_list = obj_path.rsplit(".", 1)
     obj_path = obj_path_list.pop(0) if len(obj_path_list) > 1 else default_obj_path
@@ -146,7 +143,7 @@ def set_seed(random_seed: int) -> None:
 
 # https://github.com/GokuMohandas/applied-ml/blob/main/tagifai/utils.py
 def get_sorted_runs(
-    experiment_name: str, order_by: List, top_k: Optional[int] = 10
+    experiment_name: str, order_by: List[str], top_k: Optional[int] = 10
 ) -> pd.DataFrame:
     """Get top_k best runs for a given experiment_name according to given metrics.
 

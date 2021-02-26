@@ -10,7 +10,7 @@ create_dataset(){
             b=$(basename $f)
             # on récupère le nom du repertoire
             echo "Making new directories for" $b
-            mkdir ./datas/raw_dataset/$b
+            mkdir ../datas/raw_dataset/$b
             #on crée un dossier avec le même nom
             #ls $f/ | head -$1
             echo "Copying the first $1 pictures for folder $b"

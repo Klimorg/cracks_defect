@@ -78,13 +78,8 @@ class Tensorize(object):
         classes = sorted(set(label_list))
         logger.info(f"Found following labels {classes}")
 
-<<<<<<< HEAD
-        labels = np.unique(label_list, return_inverse=True)[1]
-        dic = dict(zip(label_list, labels))
-=======
         labels = np.unique(label_list, return_inverse=True)[1]  # type: ignore
         dic = dict(zip(label_list, labels))  # type: Dict[str, int]
->>>>>>> ce1a87528dcab797968df04b65820cc6e53029c5
         logger.info(f"Dictionnary creation {dic}")
         vectorized_get = np.vectorize(dic.get)
 

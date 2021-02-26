@@ -11,10 +11,11 @@
     },
     "python.languageServer": "Pylance",
     "editor.fontLigatures": true,
-    "editor.fontFamily": "'JetBrains Mono Medium'",
+    "editor.fontFamily": "JetBrains Mono Medium",
     "editor.fontSize": 16,
     "terminal.integrated.cursorStyle": "line",
     "terminal.integrated.cursorWidth": 2,
+    "terminal.integrated.fontFamily": "MesloLGS NF",
     "git.autofetch": true,
     "trailing-spaces.trimOnSave": true,
   // config python

@@ -8,25 +8,6 @@
 	"dockerFile": "../Dockerfile",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
-<<<<<<< HEAD
-		"terminal.integrated.shell.linux": null
-	},
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [],
-	//Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [
-		5000,
-		5000
-	],
-	// Uncomment the next line to run commands after the container is created - for example installing curl.
-	// "postCreateCommand": "apt-get update && apt-get install -y curl",
-	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
-	"runArgs": ["-it", "--rm", "-P"],
-	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
-	//"mounts": [ "type=bind,source=$(PWD),target=/media/vorph/datas/cracks_defect" ],
-	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "vscode"
-=======
 		"editor.rulers": [88,120],
 		"workbench.colorTheme": "One Dark Pro",
 		"workbench.colorCustomizations": {
@@ -60,5 +41,4 @@
 	"mounts": [ "type=bind,source=/media/vorph/datas/cracks_defect,target=/media/vorph/datas/cracks_defect" ],
 	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
 	//"remoteUser": "vorph"
->>>>>>> ce1a87528dcab797968df04b65820cc6e53029c5
 }

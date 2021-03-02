@@ -6,6 +6,7 @@ import tensorflow as tf
 from loguru import logger
 from mlflow import tensorflow as mltensorflow
 from omegaconf import DictConfig
+
 from tensorize import Tensorize
 from utils import flatten_omegaconf, load_obj, set_log_infos, set_seed
 

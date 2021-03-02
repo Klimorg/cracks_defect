@@ -61,3 +61,9 @@ mi_report:
 
 hal_report:
 	radon hal src/
+
+install_precommit:
+	pre-commit install
+
+check_precommit:
+	pre-commit run --all

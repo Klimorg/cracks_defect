@@ -6,4 +6,4 @@ mkdocstrings==0.13.6
 pretty-errors==1.2.19
 pipreqs==0.4.10
 mypy==0.790
-data-science-types==0.2.22
+data-science-types==0.2.23

@@ -8,6 +8,7 @@ import typer
 import yaml
 from loguru import logger
 from sklearn.model_selection import train_test_split
+
 from utils import set_seed
 
 with open("configs/params.yaml") as reproducibility_params:
@@ -42,11 +43,11 @@ def get_files_paths(
 
     |
 
-    |--- subdir_A (class_A)
+    |___ subdir_A (class_A)
 
-    |--- subdir_B (class_B)
+    |___ subdir_B (class_B)
 
-    |--- ...
+    |___ ...
 
     Args:
         root_directory (Path): Root directory where to start the recursive search.
@@ -90,7 +91,8 @@ def get_images_paths_and_labels(
         folders (List[Path]): List constaining the folders (labels).
 
     Note:
-        The paths given here are the absolute ones, not the relative ones.
+        The paths given here are the absolute ones, not the relative ones. Be sure to
+        have the rights paths when changing from one workspace to another.
 
     Raises:
         ValueError: Class deduced from image_path which isn't in 'folders' list.

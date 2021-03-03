@@ -1,38 +1,22 @@
-FROM tensorflow/tensorflow:2.3.2-gpu
+#FROM nvcr.io/nvidia/tensorflow:21.02-tf2-py3
+FROM nvcr.io/nvidia/tensorflow:20.12-tf2-py3
 
-# RUN  mkdir -p /work/
-# WORKDIR /work/
-
-# # Dockerfile
-# ARG DOCKER_BASE_IMAGE=<BASE IMAGE NAME>
-# FROM $DOCKER_BASE_IMAGE
-# ARG USER=docker
-# ARG UID=1000
-# ARG GID=1000
-
-# # default password for user
-# ARG PW=docker
-
-# # Option1: Using unencrypted password/ specifying password
-# RUN useradd -m ${USER} --uid=${UID} && echo "${USER}:${PW}" | \
-#       chpasswd
-# # Option2: Using the same encrypted password as host
-
-# #COPY /etc/group /etc/group 
-# #COPY /etc/passwd /etc/passwd
-# #COPY /etc/shadow /etc/shadow# Setup default user, when enter docker container
-# USER ${UID}:${GID}
-# WORKDIR /home/${USER}
 
 COPY requirements.txt .
+COPY requirements-dev.txt .
+
+ARG USERNAME=vorph
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+RUN groupadd -g $USER_GID -o $USERNAME
+RUN useradd -m -u $USER_UID -g $USER_GID -o -s /bin/bash $USERNAME
+
+USER $USERNAME
 
 RUN /bin/bash -c "pip install --no-cache-dir -r requirements.txt"
 
-# Set up SSH vorph
-RUN apt-get update && apt-get install -y git
-#openssh-server
-RUN useradd -m -s /bin/bash vorph
-#RUN mkdir /var/run/sshd
-#RUN echo 'vorph:050188' | chpasswd
-#EXPOSE 22
-#CMD ["/usr/sbin/sshd", "-D"]
+# RUN /bin/bash -c "pip install --no-cache-dir -r requirements-dev.txt"
+
+# EXPOSE 5000
+# EXPOSE 8001

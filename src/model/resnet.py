@@ -1,10 +1,8 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
-import tensorflow as tf  # type: ignore
-
-# import yaml
-from tensorflow.keras import Model  # type: ignore
-from tensorflow.keras.layers import (  # type: ignore
+import tensorflow as tf
+from tensorflow.keras import Model
+from tensorflow.keras.layers import (
     Activation,
     Add,
     BatchNormalization,
@@ -15,11 +13,7 @@ from tensorflow.keras.layers import (  # type: ignore
     ReLU,
 )
 
-# params = yaml.safe_load(open("configs/params.yaml"))["resnet"]
-
-# repetitions = params["repetitions_block"]
-# n_classes = params["n_classes"]
-# img_shape = params["img_shape"]
+size_one = (1, 1)
 
 
 def bn_relu_conv(
@@ -28,7 +22,7 @@ def bn_relu_conv(
     kernel_size: Tuple[int, int],
     strides: Tuple[int, int],
 ) -> tf.Tensor:
-    """[summary]
+    """[summary].
 
     Args:
         tensor (tf.Tensor): [description]
@@ -39,22 +33,21 @@ def bn_relu_conv(
     Returns:
         tf.Tensor: [description]
     """
-    x = BatchNormalization()(tensor)
-    x = ReLU()(x)
-    x = Conv2D(
+    img = BatchNormalization()(tensor)
+    img = ReLU()(img)
+
+    return Conv2D(
         filters=filters,
         kernel_size=kernel_size,
         strides=strides,
         padding="same",
         kernel_initializer="he_normal",
         use_bias=False,
-    )(x)
-
-    return x
+    )(img)
 
 
 def resnet_block(tensor: tf.Tensor, filters: int) -> tf.Tensor:
-    """[summary]
+    """[summary].
 
     Args:
         tensor (tf.Tensor): [description]
@@ -63,21 +56,16 @@ def resnet_block(tensor: tf.Tensor, filters: int) -> tf.Tensor:
     Returns:
         tf.Tensor: [description]
     """
-
     inner_filters = filters // 4
-    x = bn_relu_conv(tensor, inner_filters, kernel_size=(1, 1), strides=(1, 1))
-    x = bn_relu_conv(x, inner_filters, kernel_size=(3, 3), strides=(1, 1))
-    x = bn_relu_conv(x, filters, kernel_size=(1, 1), strides=(1, 1))
+    img = bn_relu_conv(tensor, inner_filters, kernel_size=size_one, strides=size_one)
+    img = bn_relu_conv(img, inner_filters, kernel_size=(3, 3), strides=size_one)
+    img = bn_relu_conv(img, filters, kernel_size=size_one, strides=size_one)
 
-    x = Add()([x, tensor])
-
-    return x
+    return Add()([img, tensor])
 
 
-def proj_block(
-    tensor: tf.Tensor, filters: int, strides: Tuple[int, int]
-) -> tf.Tensor:
-    """[summary]
+def proj_block(tensor: tf.Tensor, filters: int, strides: Tuple[int, int]) -> tf.Tensor:
+    """[summary].
 
     Args:
         tensor (tf.Tensor): [description]
@@ -87,16 +75,15 @@ def proj_block(
     Returns:
         tf.Tensor: [description]
     """
-
     inner_filters = filters // 4
 
-    x = BatchNormalization()(tensor)
-    out1 = ReLU()(x)
+    img = BatchNormalization()(tensor)
+    out1 = ReLU()(img)
 
     # shortcut
     out2 = Conv2D(
         filters=filters,
-        kernel_size=(1, 1),
+        kernel_size=size_one,
         padding="same",
         strides=strides,
         kernel_initializer="he_normal",
@@ -104,23 +91,20 @@ def proj_block(
     )(out1)
 
     # main stream
-    out3 = bn_relu_conv(
-        out1, inner_filters, kernel_size=(1, 1), strides=strides
-    )
-    out3 = bn_relu_conv(
-        out3, inner_filters, kernel_size=(3, 3), strides=(1, 1)
-    )
-    out3 = bn_relu_conv(out3, filters, kernel_size=(1, 1), strides=(1, 1))
+    out3 = bn_relu_conv(out1, inner_filters, kernel_size=size_one, strides=strides)
+    out3 = bn_relu_conv(out3, inner_filters, kernel_size=(3, 3), strides=size_one)
+    out3 = bn_relu_conv(out3, filters, kernel_size=size_one, strides=size_one)
 
-    out = Add()([out2, out3])
-
-    return out
+    return Add()([out2, out3])
 
 
 def bottleneck_block(
-    tensor: tf.Tensor, filters: int, repets: int, strides: Tuple[int, int]
+    tensor: tf.Tensor,
+    filters: int,
+    strides: Tuple[int, int],
+    repets: int,
 ) -> tf.Tensor:
-    """[summary]
+    """[summary].
 
     Args:
         tensor (tf.Tensor): [description]
@@ -131,56 +115,46 @@ def bottleneck_block(
     Returns:
         tf.Tensor: [description]
     """
-
-    x = proj_block(tensor, filters, strides)
+    img = proj_block(tensor, filters, strides)
     for _ in range(repets - 1):
-        x = resnet_block(x, filters=filters)
+        img = resnet_block(img, filters=filters)
 
-    return x
+    return img
 
 
 def get_cnn(
-    img_shape: List[int],  # = img_shape,
-    n_classes: int,  # = n_classes,
-    repets: int,  # = repetitions,
+    img_shape: List[int],
+    n_classes: Optional[int],
+    repets: int,
 ) -> tf.keras.Model:
-    """[summary]
+    """[summary].
 
     Args:
         img_shape (List[int], optional): [description]. Defaults to img_shape.
         n_classes (int, optional): [description]. Defaults to n_classes.
-        repets (int, optional): [description]. Defaults to repetitions.
+        repets (int): [description]. Defaults to repetitions.
 
     Returns:
         tf.keras.Model: [description]
     """
+    img_input = Input(img_shape)
 
-    input = Input(img_shape)
-
-    x = Conv2D(
+    img = Conv2D(
         filters=16,
         kernel_size=(3, 3),
         padding="same",
         kernel_initializer="he_normal",
         use_bias=False,
-    )(input)
+    )(img_input)
 
-    x = bottleneck_block(x, filters=64, repets=repets, strides=(1, 1))
-    x = bottleneck_block(x, filters=128, repets=repets, strides=(2, 2))
-    x = bottleneck_block(x, filters=256, repets=repets, strides=(2, 2))
-    x = BatchNormalization()(x)
-    x = ReLU()(x)
+    img = bottleneck_block(img, filters=64, repets=repets, strides=size_one)
+    img = bottleneck_block(img, filters=128, repets=repets, strides=(2, 2))
+    img = bottleneck_block(img, filters=256, repets=repets, strides=(2, 2))
+    img = BatchNormalization()(img)
+    img = ReLU()(img)
 
-    x = GlobalAvgPool2D()(x)
-    x = Dense(n_classes)(x)
-    output = Activation("softmax")(x)
+    img = GlobalAvgPool2D()(img)
+    img = Dense(n_classes)(img)
+    output = Activation("softmax")(img)
 
-    model = Model(input, output)
-    return model
-
-
-if __name__ == "__main__":
-
-    model = get_cnn()
-    model.summary()
-    model.save("model.h5")
+    return Model(img_input, output)

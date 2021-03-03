@@ -1,10 +1,8 @@
 from typing import List, Tuple
 
-import tensorflow as tf  # type: ignore
-
-# import yaml
-from tensorflow.keras import Model  # type: ignore
-from tensorflow.keras.layers import (  # type: ignore
+import tensorflow as tf
+from tensorflow.keras import Model
+from tensorflow.keras.layers import (
     Activation,
     Add,
     BatchNormalization,
@@ -14,13 +12,6 @@ from tensorflow.keras.layers import (  # type: ignore
     Input,
     ReLU,
 )
-
-# params = yaml.safe_load(open("configs/params.yaml"))["wide_resnet"]
-
-# repetitions = params["repetitions_block"]
-# n_classes = params["n_classes"]
-# width_factor = params["width_factor"]
-# img_shape = params["img_shape"]
 
 
 def wide_bn_relu_conv(
@@ -119,7 +110,10 @@ def wide_block(
 
 
 def get_cnn(
-    img_shape: List[int], n_classes: int, width_factor: int, repets: int,
+    img_shape: List[int],
+    n_classes: int,
+    width_factor: int,
+    repets: int,
 ) -> tf.keras.Model:
 
     input = Input(img_shape)

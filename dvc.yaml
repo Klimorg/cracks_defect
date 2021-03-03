@@ -1,9 +1,9 @@
 stages:
   prepare:
-    cmd: python src/get_dataset.py
+    cmd: python src/make_dataset.py
     deps:
       - configs
-      - src/get_dataset.py
+      - src/prepare_dataset.py
       - datas/raw_dataset
     outs:
       - datas/prepared_datas/train.csv

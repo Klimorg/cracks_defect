@@ -12,4 +12,4 @@ mlflow==1.13.1
 dvc==1.11.16
 mkdocs==1.1.2
 mkdocs-material==7.0.3
-mkdocstrings==0.13.6
+mkdocstrings==0.15.0

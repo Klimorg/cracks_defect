@@ -118,7 +118,13 @@ venv.bak/
 .ropeproject
 
 # mkdocs documentation
-/site
+docs/site/
+
+# mlflox
+mlruns/
+
+#hydra logs
+outputs/
 
 # mypy
 .mypy_cache/

@@ -1,7 +1,7 @@
 #misc
 *.md
 *.tar
-*.dvc
+#*.dvc
 *.sh
 
 #folders

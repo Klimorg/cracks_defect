@@ -3,20 +3,20 @@ stages:
     cmd: python src/make_dataset.py
     deps:
       - configs
-      - src/prepare_dataset.py
+      - src/make_dataset.py
       - datas/raw_dataset
     outs:
-      - datas/prepared_datas/train.csv
-      - datas/prepared_datas/val.csv
-      - datas/prepared_datas/test.csv
+      - datas/prepared_dataset/train.csv
+      - datas/prepared_dataset/val.csv
+      - datas/prepared_dataset/test.csv
 
   train:
     cmd: python src/train.py
     deps:
       - configs
       - src/train.py
-      - datas/prepared_datas/train.csv
-      - datas/prepared_datas/val.csv
-      - datas/prepared_datas/test.csv
+      - datas/prepared_dataset/train.csv
+      - datas/prepared_dataset/val.csv
+      - datas/prepared_dataset/test.csv
 
 #  evaluate:

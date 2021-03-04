@@ -21,7 +21,8 @@
   "python.languageServer": "Pylance",
   "python.analysis.extraPaths": [
     "./src",
-    "./model"
+    "./model",
+    "./prod"
   ],
   "python.sortImports.path": "isort",
   "python.sortImports.args": [

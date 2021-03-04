@@ -2,7 +2,7 @@ loguru==0.5.3
 # tensorflow==2.2.0
 hydra_core==1.0.6
 pandas==1.2.3
-omegaconf==2.0.5
+omegaconf==2.0.6
 # numpy==1.19.2
 hydra==2.5
 PyYAML==5.4.1

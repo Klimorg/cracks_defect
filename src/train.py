@@ -10,8 +10,6 @@ from omegaconf import DictConfig
 from tensorize import Tensorize
 from utils import flatten_omegaconf, load_obj, set_log_infos, set_seed
 
-# test hello world
-
 
 @logger.catch()
 @hydra.main(config_path="../configs/", config_name="params.yaml")

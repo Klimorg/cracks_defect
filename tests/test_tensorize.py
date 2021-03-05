@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import tensorflow as tf
+
 from src.tensorize import Tensorize
 
 
@@ -115,7 +116,7 @@ def test_parse_image_and_label(tensor: Tensorize, df: pd.DataFrame) -> None:
     assert (oh_label20, oh_label21) == (0, 1)
 
 
-def test_train_prepocess(tensor: Tensorize, df: pd.DataFrame) -> None:
+def test_train_prepocess(tensor: Tensorize) -> None:
     """[summary].
 
     Args:
@@ -129,7 +130,7 @@ def test_train_prepocess(tensor: Tensorize, df: pd.DataFrame) -> None:
     assert img.numpy().shape == (224, 224, 3)
 
 
-def test_create_dataset_without_augment(tensor, df):
+def test_create_dataset_without_augment(tensor):
     """[summary].
 
     Args:
@@ -144,7 +145,7 @@ def test_create_dataset_without_augment(tensor, df):
         assert imgs.numpy().shape == (5, 224, 224, 3)
 
 
-def test_create_dataset_with_augment(tensor, df):
+def test_create_dataset_with_augment(tensor):
     """[summary].
 
     Args:

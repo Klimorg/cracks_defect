@@ -27,9 +27,9 @@
 		"shardulm94.trailing-spaces",
 		"visualstudioexptteam.vscodeintellicode",
 		"redhat.vscode-yaml",
-		"vscode-icons-team.vscode-icons",
 		"zhuangtongfa.material-theme",
-		"coenraads.bracket-pair-colorizer-2"
+		"coenraads.bracket-pair-colorizer-2",
+		"emmanuelbeziat.vscode-great-icons"
 	],
 	//Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [5000,8001],

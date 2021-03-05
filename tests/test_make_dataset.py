@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from src.prepare_dataset import (
+
+from src.make_dataset import (
     create_train_val_test_datasets,
     get_files_paths,
     get_images_paths_and_labels,

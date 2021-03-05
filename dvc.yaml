@@ -1,6 +1,6 @@
 stages:
   prepare:
-    cmd: python src/get_dataset.py
+    cmd: python src/make_dataset.py
     deps:
       - configs
       - src/prepare_dataset.py

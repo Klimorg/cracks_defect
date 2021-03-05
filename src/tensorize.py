@@ -1,4 +1,4 @@
-from typing import List, Tuple, TypeVar
+from typing import Dict, List, Tuple, TypeVar
 
 import numpy as np
 import pandas as pd
@@ -81,13 +81,13 @@ class Tensorize(object):
         labels = np.unique(label_list, return_inverse=True)[1]  # type: ignore
         dic = dict(zip(label_list, labels))  # type: Dict[str, int]
         logger.info(f"Dictionnary creation {dic}")
-        vectorized_get = np.vectorize(dic.get)
+        vectorized_get = np.vectorize(dic.get)  # type: ignore
 
         return vectorized_get(label_list)
 
     def parse_image_and_label(
         self, filename: str, label: int
-    ) -> Tuple[np.ndarray, int]:
+    ) -> Tuple[np.ndarray, int]:  # type: ignore
         """Transform image and label.
 
         Parse image to go from path to a resized np.ndarray, and parse the labels to
@@ -115,8 +115,8 @@ class Tensorize(object):
         return image, label
 
     def train_preprocess(
-        self, image: np.ndarray, label: List[int]
-    ) -> Tuple[np.ndarray, List[int]]:
+        self, image: np.ndarray, label: List[int]  # type: ignore
+    ) -> Tuple[np.ndarray, List[int]]:  # type: ignore
         """Augmentation preprocess, if needed.
 
         Args:

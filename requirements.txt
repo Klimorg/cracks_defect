@@ -1,17 +1,15 @@
 loguru==0.5.3
-hydra_core==1.0.4
-pandas==1.1.5
-omegaconf==2.0.5
-hydra==2.5
-PyYAML==5.3.1
-scikit_learn==0.24.0
-typer==0.3.2
-mlflow==1.13.1
-dvc==1.11.
-mkdocs==1.1.2
-mkdocs-material==6.2.3
-mkdocstrings==0.13.6
-
-# numpy est une dépendance de tensorflow, et donc s'installe de façon automatique
-# dans l'environnement de dev docker
+# tensorflow==2.2.0
+hydra_core==1.0.6
+pandas==1.2.3
+omegaconf==2.0.6
 # numpy==1.19.2
+hydra==2.5
+PyYAML==5.4.1
+scikit_learn==0.24.1
+typer==0.3.2
+mlflow==1.14.1
+dvc==1.11.16
+mkdocs==1.1.2
+mkdocs-material==7.0.3
+mkdocstrings==0.15.0

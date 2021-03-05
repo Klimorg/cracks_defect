@@ -4,6 +4,7 @@ from typing import Dict
 import pytest
 from hydra.experimental import compose, initialize
 from omegaconf import DictConfig
+
 from src.utils import config_to_hydra_dict, flatten_omegaconf
 
 config_files = [

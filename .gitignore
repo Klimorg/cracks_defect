@@ -118,7 +118,13 @@ venv.bak/
 .ropeproject
 
 # mkdocs documentation
-/site
+docs/site/
+
+# mlflow
+mlruns/
+
+# hydra logs
+outputs/
 
 # mypy
 .mypy_cache/
@@ -127,3 +133,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# mlflow
+mlruns/
+
+# hydra
+outputs/

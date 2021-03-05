@@ -1,35 +1,43 @@
 prepare:
-  cmd: python src/get_dataset.py
+  cmd: python src/make_dataset.py
   deps:
+  - path: configs
+    md5: 71c6796c1fe6e7e174915ae002ce1027.dir
+    size: 2335
+    nfiles: 11
   - path: datas/raw_dataset
-    md5: 2cb6bff7b682a2d2c192cca90bcfc730.dir
-    size: 7307648
-    nfiles: 1200
-  - path: src/get_dataset.py
-    md5: b47459d09154a3c600e22a4b6cbe2e05
-    size: 3928
+    md5: 5547be2d2da225282c5439c0f336b9f1.dir
+    size: 24349724
+    nfiles: 4000
+  - path: src/make_dataset.py
+    md5: a297d328a7885864356b078f57519e00
+    size: 7561
   outs:
-  - path: datas/prepared_datas/test.csv
-    md5: de3e4235250dd7566d9eeca6d042ba1e
-    size: 12056
-  - path: datas/prepared_datas/train.csv
-    md5: 218842a9be0f412e647ba2ece3a6f29e
-    size: 72806
-  - path: datas/prepared_datas/val.csv
-    md5: 3d67e3ab14b85ec5bbdf9bb4aac6997f
-    size: 12056
+  - path: datas/prepared_dataset/test.csv
+    md5: 04015d6bda828cf84d21a2d008f08929
+    size: 40016
+  - path: datas/prepared_dataset/train.csv
+    md5: a3346a6f4f4592fa90ecab6014a3a1a4
+    size: 240016
+  - path: datas/prepared_dataset/val.csv
+    md5: 50eb8ee0b961f5bda351374b987d5ff1
+    size: 40016
 train:
   cmd: python src/train.py
   deps:
-  - path: datas/prepared_datas/test.csv
-    md5: de3e4235250dd7566d9eeca6d042ba1e
-    size: 12056
-  - path: datas/prepared_datas/train.csv
-    md5: 218842a9be0f412e647ba2ece3a6f29e
-    size: 72806
-  - path: datas/prepared_datas/val.csv
-    md5: 3d67e3ab14b85ec5bbdf9bb4aac6997f
-    size: 12056
+  - path: configs
+    md5: 71c6796c1fe6e7e174915ae002ce1027.dir
+    size: 2335
+    nfiles: 11
+  - path: datas/prepared_dataset/test.csv
+    md5: 04015d6bda828cf84d21a2d008f08929
+    size: 40016
+  - path: datas/prepared_dataset/train.csv
+    md5: a3346a6f4f4592fa90ecab6014a3a1a4
+    size: 240016
+  - path: datas/prepared_dataset/val.csv
+    md5: 50eb8ee0b961f5bda351374b987d5ff1
+    size: 40016
   - path: src/train.py
-    md5: 6cc7d43e80ddffd4bbfe4d7df1ce1295
-    size: 4620
+    md5: 3eb61a397350cc07e1c65366de4f4952
+    size: 4348

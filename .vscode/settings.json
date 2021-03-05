@@ -43,5 +43,5 @@
   "editor.formatOnSave": true,
   "editor.formatOnPaste": false,
   "editor.formatOnType": false,
-  "python.pythonPath": "/home/vorph/miniconda3/envs/defect/bin/python",
+  "python.pythonPath": "/usr/bin/python",
   }

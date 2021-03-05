@@ -1,0 +1,805 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <meta name="author" content="Mathieu Klimczak">
+      
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.8">
+    
+    
+      
+        <title>Boucle d'entraînement - Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.cb6bc1d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.39b8e14a.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#boucle-dentrainement-du-modele" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="Documentation" class="md-header-nav__button md-logo" aria-label="Documentation">
+      
+  <img src="../images/logo_blanc.svg" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            Documentation
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              Boucle d'entraînement
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href=".." class="md-tabs__link">
+      Acceuil
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../make_dataset/" class="md-tabs__link">
+        Création des datasets
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../resnet/" class="md-tabs__link">
+        Modèles CNN
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  <li class="md-tabs__item">
+    <a href="./" class="md-tabs__link md-tabs__link--active">
+      Boucle d'entraînement
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../test_tensorize/" class="md-tabs__link">
+        Tests unitaires
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Documentation" class="md-nav__button md-logo" aria-label="Documentation">
+      
+  <img src="../images/logo_blanc.svg" alt="logo">
+
+    </a>
+    Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Acceuil
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" >
+      
+      <label class="md-nav__link" for="nav-2">
+        Création des datasets
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Création des datasets" data-md-level="1">
+        <label class="md-nav__title" for="nav-2">
+          <span class="md-nav__icon md-icon"></span>
+          Création des datasets
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../make_dataset/" class="md-nav__link">
+        Initialisation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensorize/" class="md-nav__link">
+        Transformation des données
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" >
+      
+      <label class="md-nav__link" for="nav-3">
+        Modèles CNN
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Modèles CNN" data-md-level="1">
+        <label class="md-nav__title" for="nav-3">
+          <span class="md-nav__icon md-icon"></span>
+          Modèles CNN
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resnet/" class="md-nav__link">
+        Architecture ResNet
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Boucle d'entraînement
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Boucle d'entraînement
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#src.train" class="md-nav__link">
+    src.train
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src.train.train" class="md-nav__link">
+    train()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" >
+      
+      <label class="md-nav__link" for="nav-5">
+        Tests unitaires
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Tests unitaires" data-md-level="1">
+        <label class="md-nav__title" for="nav-5">
+          <span class="md-nav__icon md-icon"></span>
+          Tests unitaires
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../test_tensorize/" class="md-nav__link">
+        tensorize
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../test_make_dataset/" class="md-nav__link">
+        prepare_dataset
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../test_utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#src.train" class="md-nav__link">
+    src.train
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src.train.train" class="md-nav__link">
+    train()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="boucle-dentrainement-du-modele">Boucle d'entraînement du modèle</h1>
+<div class="doc doc-object doc-module">
+<h2 class="hidden-toc" id="src.train" style="visibility: hidden; position: absolute;">
+        </h2>
+<div class="doc doc-contents first">
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h2 class="doc doc-heading" id="src.train.train">
+
+<code class="highlight language-python"><span class="n">train</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></code>
+
+
+      </h2>
+<div class="doc doc-contents ">
+<p>Train loop of the classification model.</p>
+<p>Lorsque que l'on travaille avec Hydra, toute la logique de la fonction doit
+être contenu dans <code>main()</code>, on ne peut pas faire appel à des fonctions
+tierces extérieures à <code>main()</code>, il faut tout coder dedans.</p>
+<p>De même faire attention au dossier root : hydra modifie le dossier root :</p>
+<p>Path(<strong>file</strong>).parent.parent donnera bien <code>.</code> mais cette racine est située
+dans le dossier <code>outputs</code>, et non dans vrai dossier racine <code>cracks_defect</code>.</p>
+<p>Il faut donc ici utiliser <code>hydra.utils.get_original_cwd()</code> pour pouvoir
+avoir accès au dossier root <code>cracks_defect</code>.</p>
+<p>Pour changer le learning rate d'un optimiseur
+<strong>après avoir compilé le modèle</strong>, voir la question StackOverflow suivante.</p>
+<p><a href="https://stackoverflow.com/questions/ 59737875/keras-change-learning-rate">Modifier de lr</a></p>
+<p>https://stackoverflow.com/questions/59635474/
+whats-difference-between-using-metrics-acc-and-tf-keras-metrics-accuracy</p>
+<p>I'll just add that as of tf v2.2 in training.py the docs say
+"When you pass the strings 'accuracy' or 'acc', we convert this to
+one of tf.keras.metrics.BinaryAccuracy,
+tf.keras.metrics.CategoricalAccuracy,
+tf.keras.metrics.SparseCategoricalAccuracy based on the loss function
+used and the model output shape. We do a similar conversion
+for the strings 'crossentropy' and 'ce' as well."</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config</code></td>
+<td><code>DictConfig</code></td>
+<td>
+<p>[description]</p>
+</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>src/train.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="nd">@logger</span><span class="o">.</span><span class="n">catch</span><span class="p">()</span>
+<span class="nd">@hydra</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="s2">"../configs/"</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">"params.yaml"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
+    <span class="sd">"""Train loop of the classification model.</span>
+
+<span class="sd">    Lorsque que l'on travaille avec Hydra, toute la logique de la fonction doit</span>
+<span class="sd">    être contenu dans `main()`, on ne peut pas faire appel à des fonctions</span>
+<span class="sd">    tierces extérieures à `main()`, il faut tout coder dedans.</span>
+
+<span class="sd">    De même faire attention au dossier root : hydra modifie le dossier root :</span>
+
+<span class="sd">    Path(__file__).parent.parent donnera bien `.` mais cette racine est située</span>
+<span class="sd">    dans le dossier `outputs`, et non dans vrai dossier racine `cracks_defect`.</span>
+
+<span class="sd">    Il faut donc ici utiliser `hydra.utils.get_original_cwd()` pour pouvoir</span>
+<span class="sd">    avoir accès au dossier root `cracks_defect`.</span>
+
+<span class="sd">    Pour changer le learning rate d'un optimiseur</span>
+<span class="sd">    **après avoir compilé le modèle**, voir la question StackOverflow suivante.</span>
+
+<span class="sd">    [Modifier de lr](https://stackoverflow.com/questions/</span>
+<span class="sd">    59737875/keras-change-learning-rate)</span>
+
+<span class="sd">    https://stackoverflow.com/questions/59635474/</span>
+<span class="sd">    whats-difference-between-using-metrics-acc-and-tf-keras-metrics-accuracy</span>
+
+<span class="sd">    I'll just add that as of tf v2.2 in training.py the docs say</span>
+<span class="sd">    "When you pass the strings 'accuracy' or 'acc', we convert this to</span>
+<span class="sd">    one of tf.keras.metrics.BinaryAccuracy,</span>
+<span class="sd">    tf.keras.metrics.CategoricalAccuracy,</span>
+<span class="sd">    tf.keras.metrics.SparseCategoricalAccuracy based on the loss function</span>
+<span class="sd">    used and the model output shape. We do a similar conversion</span>
+<span class="sd">    for the strings 'crossentropy' and 'ce' as well."</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (DictConfig): [description]</span>
+<span class="sd">    """</span>
+    <span class="n">conf_dict</span><span class="p">,</span> <span class="n">repo_path</span> <span class="o">=</span> <span class="n">set_log_infos</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Setting training policy."</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"test depuis l'env de dev docker"</span><span class="p">)</span>
+    <span class="n">policy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">mixed_precision</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">Policy</span><span class="p">(</span><span class="s2">"mixed_float16"</span><span class="p">)</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">mixed_precision</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">set_policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Compute dtype : </span><span class="si">{</span><span class="n">policy</span><span class="o">.</span><span class="n">compute_dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Variable dtype : </span><span class="si">{</span><span class="n">policy</span><span class="o">.</span><span class="n">variable_dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">set_tracking_uri</span><span class="p">(</span><span class="sa">f</span><span class="s2">"file://</span><span class="si">{</span><span class="n">repo_path</span><span class="si">}</span><span class="s2">/mlruns"</span><span class="p">)</span>
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">set_experiment</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">experiment_name</span><span class="p">)</span>
+
+    <span class="n">set_seed</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">prepare</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Data loading"</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Root path of the folder : </span><span class="si">{</span><span class="n">repo_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"MLFlow uri : </span><span class="si">{</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_tracking_uri</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">run_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">run</span><span class="p">:</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Run infos : </span><span class="si">{</span><span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="n">mltensorflow</span><span class="o">.</span><span class="n">autolog</span><span class="p">(</span><span class="n">every_n_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_params</span><span class="p">(</span><span class="n">flatten_omegaconf</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">Tensorize</span><span class="p">(</span>
+            <span class="n">n_classes</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">datas</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span>
+            <span class="n">img_shape</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">img_shape</span><span class="p">,</span>
+            <span class="n">random_seed</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">prepare</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">repo_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">prepared_dataset</span><span class="o">.</span><span class="n">train</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">repetitions</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">augment</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">ds_val</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">repo_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">prepared_dataset</span><span class="o">.</span><span class="n">val</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">repetitions</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">augment</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Compiling model"</span><span class="p">)</span>
+
+        <span class="n">cnn</span> <span class="o">=</span> <span class="n">load_obj</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">cnn</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">cnn</span><span class="p">(</span><span class="o">**</span><span class="n">conf_dict</span><span class="p">[</span><span class="s2">"cnn.params"</span><span class="p">])</span>
+
+        <span class="n">optim</span> <span class="o">=</span> <span class="n">load_obj</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="p">(</span><span class="o">**</span><span class="n">conf_dict</span><span class="p">[</span><span class="s2">"optimizer.params"</span><span class="p">])</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">load_obj</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="o">**</span><span class="n">conf_dict</span><span class="p">[</span><span class="s2">"losses.params"</span><span class="p">])</span>
+
+        <span class="n">metric</span> <span class="o">=</span> <span class="n">load_obj</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span><span class="p">()</span>
+
+        <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+            <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">metric</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Start training"</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+            <span class="n">ds</span><span class="p">,</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
+            <span class="n">validation_data</span><span class="o">=</span><span class="n">ds_val</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../resnet/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Précédent
+                </span>
+                Architecture ResNet
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../test_tensorize/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Suivant
+                </span>
+                tensorize
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.18f0862e.min.js"></script>
+      <script src="../assets/javascripts/bundle.994580cf.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copier dans le presse-papier", "clipboard.copied": "Copi\u00e9 dans le presse-papier", "search.config.lang": "fr", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Rechercher", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: ['navigation.instant', 'navigation.tabs'],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.9c0e82ba.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

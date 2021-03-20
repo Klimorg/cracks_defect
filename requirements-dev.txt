@@ -17,6 +17,6 @@ rope==0.18.0
 # precommit action
 pre-commit==2.10.1
 # code quality infos
-radon==4.3.2
+radon==4.5.0
 
 bandit==1.7.0

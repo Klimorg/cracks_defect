@@ -5,7 +5,7 @@ flake8==3.9.0
 wemake-python-styleguide==0.15.2
 mypy==0.812
 data-science-types==0.2.23
-darglint==1.7.0
+darglint==1.8.0
 # unit tests
 pytest==6.2.2
 pytest-cov==2.11.1

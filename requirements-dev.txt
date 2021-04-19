@@ -13,7 +13,7 @@ pytest-xdist==2.2.1
 # requirements writing
 pipreqs==0.4.10
 # refactoring
-rope==0.18.0
+rope==0.19.0
 # precommit action
 pre-commit==2.11.1
 # code quality infos

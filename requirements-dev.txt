@@ -1,6 +1,6 @@
 # linting, formating, typing
 isort==5.8.0
-black==20.8b1
+black==21.4b2
 flake8==3.9.0
 wemake-python-styleguide==0.15.2
 mypy==0.812
